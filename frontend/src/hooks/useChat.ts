@@ -1,20 +1,13 @@
 import { useCallback, useRef, useState } from 'react'
+import {
+  canSendOutgoingMessage,
+  chatErrorMessage,
+  isStaleChatRequest,
+  resolveOutgoingMessage,
+} from '../modules/chat/application/outgoingMessage'
 import { fetchChatAnswer } from '../modules/chat/infrastructure/chatClient'
+import { createMessage } from '../modules/chat/model/createMessage'
 import type { ChatMessage } from '../modules/chat/model/chat'
-
-function createMessage(
-  role: ChatMessage['role'],
-  content: string,
-  sources?: string[],
-): ChatMessage {
-  return {
-    id: crypto.randomUUID(),
-    role,
-    content,
-    sources,
-    createdAt: Date.now(),
-  }
-}
 
 export function useChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
@@ -31,8 +24,8 @@ export function useChat() {
 
   const sendMessage = useCallback(
     async (overrideText?: string) => {
-      const text = (overrideText ?? draft).trim()
-      if (!text || isLoading) {
+      const text = resolveOutgoingMessage(overrideText, draft)
+      if (!canSendOutgoingMessage(text, isLoading)) {
         return
       }
 
@@ -40,12 +33,12 @@ export function useChat() {
       activeRequestRef.current = requestId
 
       setDraft('')
-      setMessages((current) => [...current, createMessage('user', text)])
+      setMessages((current) => [...current, createMessage('user', text!)])
       setIsLoading(true)
 
       try {
-        const { answer, sources } = await fetchChatAnswer(text)
-        if (activeRequestRef.current !== requestId) {
+        const { answer, sources } = await fetchChatAnswer(text!)
+        if (isStaleChatRequest(activeRequestRef.current, requestId)) {
           return
         }
         setMessages((current) => [
@@ -53,17 +46,15 @@ export function useChat() {
           createMessage('assistant', answer, sources),
         ])
       } catch (error) {
-        if (activeRequestRef.current !== requestId) {
+        if (isStaleChatRequest(activeRequestRef.current, requestId)) {
           return
         }
-        const message =
-          error instanceof Error ? error.message : 'Something went wrong'
         setMessages((current) => [
           ...current,
-          createMessage('assistant', message),
+          createMessage('assistant', chatErrorMessage(error)),
         ])
       } finally {
-        if (activeRequestRef.current === requestId) {
+        if (!isStaleChatRequest(activeRequestRef.current, requestId)) {
           setIsLoading(false)
         }
       }

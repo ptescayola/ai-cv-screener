@@ -12,7 +12,8 @@ cv-screener/
 
 ```
 modules/chat/
-  model/           ChatMessage, ChatRole
+  model/           ChatMessage, createMessage
+  application/     outgoing message rules, thread key, scroll metrics
   infrastructure/  chatClient, cvDownloadUrl
 utils/             string (stripPdfExtension), date (formatMessageTime)
 hooks/             useChat (state + send), useChatScroll (message list)
@@ -138,7 +139,9 @@ Set `OPENAI_API_KEY` and adjust models if needed (see **OpenAI models** above).
 ```bash
 npm run dev:backend   # http://localhost:3001
 npm run dev:frontend  # http://localhost:5173
-npm run test          # backend unit tests (Node test runner)
+npm run test          # backend + frontend unit tests
+npm run test:backend
+npm run test:frontend
 ```
 
 Health: [http://localhost:3001/health](http://localhost:3001/health) → `{"status":"ok"}`.

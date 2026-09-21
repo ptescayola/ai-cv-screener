@@ -1,12 +1,13 @@
 import { useCallback, useLayoutEffect, useRef, useState } from 'react'
+import { chatThreadKey } from '../modules/chat/application/chatThreadKey'
+import { isNearChatBottom } from '../modules/chat/application/scrollMetrics'
 import type { ChatMessage } from '../modules/chat/model/chat'
 
-const BOTTOM_THRESHOLD_PX = 64
-
 function isNearBottom(element: HTMLElement): boolean {
-  return (
-    element.scrollHeight - element.scrollTop - element.clientHeight <=
-    BOTTOM_THRESHOLD_PX
+  return isNearChatBottom(
+    element.scrollHeight,
+    element.scrollTop,
+    element.clientHeight,
   )
 }
 
@@ -20,11 +21,6 @@ function scrollToBottom(element: HTMLElement, smooth: boolean) {
   })
 }
 
-function threadKey(messages: ChatMessage[], isLoading: boolean): string {
-  const last = messages.at(-1)
-  return `${messages.length}:${last?.id ?? 'none'}:${isLoading ? 1 : 0}`
-}
-
 export function useChatScroll(
   messages: ChatMessage[],
   isLoading: boolean,
@@ -33,7 +29,7 @@ export function useChatScroll(
   const containerRef = useRef<HTMLDivElement>(null)
   const pinnedToBottomRef = useRef(true)
   const [showJumpToLatest, setShowJumpToLatest] = useState(false)
-  const key = threadKey(messages, isLoading)
+  const key = chatThreadKey(messages, isLoading)
 
   const jumpToLatest = useCallback(() => {
     const node = containerRef.current
