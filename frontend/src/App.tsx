@@ -11,10 +11,14 @@ function App() {
       <main className="empty-state">
         <p>
           {candidates.length === 0
-            ? 'No CVs uploaded yet.'
+            ? 'No CVs loaded yet.'
             : `${candidates.length} CV${candidates.length === 1 ? '' : 's'} ready to screen.`}
         </p>
         <p className="status">Status: {status}</p>
+        <p className="hint">
+          CV PDFs are prepared offline with{' '}
+          <code>npm run generate:cvs</code> before using the chat demo.
+        </p>
       </main>
     </div>
   )

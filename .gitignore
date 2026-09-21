@@ -2,6 +2,9 @@ node_modules/
 dist/
 .env
 *.log
+backend/data/cvs/*.pdf
+!backend/data/cvs/examples/
+!backend/data/cvs/examples/*.pdf
 
 # Editor
 .vscode/*
