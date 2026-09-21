@@ -4,7 +4,7 @@ export function AppHeader() {
       <p className="eyebrow">Hiring assistant</p>
       <h1>AI CV Screener</h1>
       <p className="lede">
-        Upload CVs and screen them against a job description.
+        Ask questions about your ingested CV dataset and get grounded answers.
       </p>
     </header>
   )

@@ -1,5 +1,6 @@
 import cors from 'cors'
 import express from 'express'
+import { chatRouter } from '../api/routes/chat.route.js'
 import { errorMiddleware } from '../api/middleware/error.middleware.js'
 
 export function createApp() {
@@ -11,6 +12,8 @@ export function createApp() {
   app.get('/health', (_req, res) => {
     res.json({ status: 'ok' })
   })
+
+  app.use('/chat', chatRouter)
 
   app.use(errorMiddleware)
 

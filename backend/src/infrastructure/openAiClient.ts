@@ -1,6 +1,7 @@
 import OpenAI from 'openai'
 import type { CvGenerationBlueprint } from '../domain/cvBlueprint.js'
 import type { CvProfile } from '../domain/cvProfile.js'
+import type { ChunkSearchHit } from '../domain/rag.js'
 import { env } from '../config/env.js'
 import { downloadImage } from '../utils/image.js'
 import { parseCvProfile } from '../utils/text.js'
@@ -56,7 +57,7 @@ export async function generateCvProfile(
           `Primary CV language: ${blueprint.language}`,
           `Industry focus: ${blueprint.industry}`,
           'Include 3-5 skills, 2-3 jobs, 1-2 education entries.',
-          'Write the CV content in the requested language.',
+          `Write all CV content in ${blueprint.language}. Set the JSON "language" field to "${blueprint.language}".`,
           'photoDescription must describe a professional headshot for image generation (appearance only, no names).',
           `Use this JSON shape:\n${JSON.stringify(CV_PROFILE_SHAPE, null, 2)}`,
         ].join('\n'),
@@ -94,6 +95,41 @@ export async function generateCvPhoto(profile: CvProfile): Promise<Buffer> {
   }
 
   throw new Error('OpenAI returned no image data')
+}
+
+export async function generateCvChatAnswer(
+  question: string,
+  chunks: ChunkSearchHit[],
+): Promise<string> {
+  const context = chunks
+    .map(
+      (chunk, index) =>
+        `(${index + 1}) [${chunk.fileName}]\n${chunk.text}`,
+    )
+    .join('\n\n')
+
+  const completion = await client.chat.completions.create({
+    model: env.openAiTextModel,
+    temperature: 0.2,
+    messages: [
+      {
+        role: 'system',
+        content:
+          'You help recruiters screen CVs. Answer ONLY using the CV excerpts provided. If the excerpts do not contain enough information, say so clearly. Always reply in English. Be concise.',
+      },
+      {
+        role: 'user',
+        content: `CV excerpts:\n\n${context}\n\nQuestion: ${question}`,
+      },
+    ],
+  })
+
+  const content = completion.choices[0]?.message?.content?.trim()
+  if (!content) {
+    throw new Error('OpenAI returned an empty chat response')
+  }
+
+  return content
 }
 
 export async function embedTexts(texts: string[]): Promise<number[][]> {

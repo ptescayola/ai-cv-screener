@@ -4,8 +4,6 @@ dist/
 *.log
 backend/data/cvs/*.pdf
 backend/data/vector-index/
-!backend/data/cvs/examples/
-!backend/data/cvs/examples/*.pdf
 
 # Editor
 .vscode/*

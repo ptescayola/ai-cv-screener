@@ -5,7 +5,18 @@ Monorepo with a React frontend (chat over CVs) and an Express backend. CV PDFs a
 ```
 cv-screener/
 ├── backend/     Express API + CV generation pipeline (CLI)
-└── frontend/    Vite + React chat shell
+└── frontend/    Vite + React chat UI
+```
+
+## Frontend layout (`frontend/src`)
+
+```
+modules/chat/
+  model/           ChatMessage, CvChatAnswer
+  application/     askCvQuestion (use case)
+  infrastructure/  chatClient (fetch → backend)
+components/        Chat UI
+hooks/             useChat wires UI → modules/chat/application
 ```
 
 ## Backend layout
@@ -16,7 +27,7 @@ application/     generateCv, ingestCvs, searchCvChunks
 infrastructure/  OpenAI, PDF read/render, filesystem, Vectra index
 composition/     Express app wiring
 scripts/         generateCvs, ingestCvs CLIs
-api/             Express app (health check for now)
+api/             HTTP routes (`POST /chat`)
 ```
 
 ## CV generation (offline dataset)
@@ -73,9 +84,19 @@ For deliverables: walk through `generateCv.ts` + run the script + show PDFs on d
 3. Embed with OpenAI (`embedTexts` in `openAiClient.ts`).
 4. Store in a local **Vectra** index (`vectorIndex.ts` → `backend/data/vector-index/`).
 
-For retrieval (chat next): `searchCvChunks(query)` embeds the question and returns the closest chunks.
+For retrieval: `searchCvChunks(query)` embeds the question and returns the closest chunks.
 
 **Vectra** keeps the MVP simple: no Postgres, Docker, or cloud vector DB—just JSON on disk, fine for dozens of CVs.
+
+## Chat API
+
+`POST /chat` with JSON body `{ "message": "your question" }` runs RAG via `application/answerCvQuestion.ts` (retrieve chunks → OpenAI answer grounded on excerpts). Response:
+
+```json
+{ "answer": "…", "sources": [{ "fileName": "ada-lovelace-abc123.pdf" }] }
+```
+
+The Vite dev server proxies `/api/*` to the backend (e.g. frontend calls `/api/chat`).
 
 ## Setup
 
