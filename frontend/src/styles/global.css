@@ -92,10 +92,18 @@ textarea {
   font: inherit;
 }
 
-.layout-inner {
+.layout-inner,
+.app-layout__content {
   width: min(100%, var(--layout-max-width));
   margin-inline: auto;
   padding-inline: var(--space-4);
+}
+
+.layout-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
 }
 
 .sr-only {

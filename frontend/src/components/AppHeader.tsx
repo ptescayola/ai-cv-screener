@@ -1,3 +1,4 @@
+import { DocumentMagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import { useTheme } from '../hooks/useTheme'
 import { Toggle } from '../ui/Toggle'
 import './AppHeader.css'
@@ -7,10 +8,16 @@ export function AppHeader() {
 
   return (
     <header className="app-header">
-      <div className="layout-inner app-header__inner">
+      <div className="layout-inner layout-bar">
         <div className="app-header__brand">
           <p className="app-header__eyebrow">Hiring assistant</p>
-          <h1 className="app-header__title">AI CV Screener</h1>
+          <h1 className="app-header__title">
+            <DocumentMagnifyingGlassIcon
+              className="app-header__title-icon"
+              aria-hidden="true"
+            />
+            AI CV Screener
+          </h1>
           <p className="app-header__subtitle">
             Frontend A.I Engineer Technical Task
           </p>
