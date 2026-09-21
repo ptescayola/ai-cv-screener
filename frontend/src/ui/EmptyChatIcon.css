@@ -1,0 +1,27 @@
+.empty-chat-icon {
+  width: 10rem;
+  aspect-ratio: 160 / 120;
+  background: linear-gradient(
+    165deg,
+    var(--empty-chat-highlight) 0%,
+    var(--empty-chat-base) 100%
+  );
+  -webkit-mask-image: var(--empty-chat-mask);
+  mask-image: var(--empty-chat-mask);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+:root {
+  --empty-chat-base: color-mix(in srgb, var(--muted) 72%, var(--text));
+  --empty-chat-highlight: color-mix(in srgb, var(--muted) 45%, var(--border));
+}
+
+:root[data-theme='dark'] {
+  --empty-chat-base: color-mix(in srgb, var(--muted) 80%, var(--surface));
+  --empty-chat-highlight: color-mix(in srgb, var(--muted) 55%, var(--text));
+}

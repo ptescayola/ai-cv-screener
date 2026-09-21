@@ -1,6 +1,7 @@
 import cors from 'cors'
 import express from 'express'
 import { chatRouter } from '../api/routes/chat.route.js'
+import { cvsRouter } from '../api/routes/cvs.route.js'
 import { errorMiddleware } from '../api/middleware/error.middleware.js'
 
 export function createApp() {
@@ -14,6 +15,7 @@ export function createApp() {
   })
 
   app.use('/chat', chatRouter)
+  app.use('/cvs', cvsRouter)
 
   app.use(errorMiddleware)
 

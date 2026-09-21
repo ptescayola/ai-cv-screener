@@ -5,9 +5,5 @@ export interface ChatMessage {
   role: ChatRole
   content: string
   sources?: string[]
-}
-
-export interface CvChatAnswer {
-  answer: string
-  sources: string[]
+  createdAt: number
 }

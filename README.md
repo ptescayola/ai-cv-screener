@@ -12,11 +12,13 @@ cv-screener/
 
 ```
 modules/chat/
-  model/           ChatMessage, CvChatAnswer
-  application/     askCvQuestion (use case)
-  infrastructure/  chatClient (fetch → backend)
-components/        Chat UI
-hooks/             useChat wires UI → modules/chat/application
+  model/           ChatMessage, ChatRole
+  infrastructure/  chatClient, cvDownloadUrl
+utils/             string (stripPdfExtension), date (formatMessageTime)
+hooks/             useChat (state + send), useChatScroll (message list)
+components/        AppLayout, AppHeader, AppFooter, Chat
+ui/                ChatBubble, ChatTextarea, SourceChips, …
+styles/            global.css (tokens, scroll-area)
 ```
 
 ## Backend layout
@@ -27,7 +29,7 @@ application/     generateCv, ingestCvs, searchCvChunks, answerCvQuestion
 infrastructure/  openAi/runAgents (runChatAgent, runImageAgent), PDF, Vectra
 composition/     Express app wiring
 scripts/         generateCvs, ingestCvs CLIs
-api/             HTTP routes (`POST /chat`)
+api/             HTTP routes (`POST /chat`, `GET /cvs/:fileName`)
 ```
 
 ## CV generation (offline dataset)
@@ -98,6 +100,30 @@ For retrieval: `searchCvChunks(query)` embeds the question and returns the close
 
 The Vite dev server proxies `/api/*` to the backend (e.g. frontend calls `/api/chat`).
 
+## OpenAI models
+
+All models are configured via `backend/.env` (see `backend/src/config/env.ts`).
+
+| Env variable | Default | Where it is used |
+|--------------|---------|------------------|
+| `OPENAI_API_KEY` | — | Required for every OpenAI call |
+| `OPENAI_TEXT_MODEL` | `gpt-4o-mini` | **Chat completions:** fictional CV JSON (`cvProfileAgent`), RAG answers (`cvChatAgent`) via `runChatAgent` |
+| `OPENAI_EMBEDDING_MODEL` | `text-embedding-3-small` | **Embeddings:** chunk vectors on ingest + query vectors on search (`embedTexts`) |
+| `OPENAI_IMAGE_MODEL` | `gpt-image-2.5-flare` | **Images:** CV headshots (`cvPhotoAgent`) via `runImageAgent` |
+| `OPENAI_IMAGE_QUALITY` | `low` | Image generation quality |
+| `OPENAI_IMAGE_SIZE` | `816x816` | Headshot dimensions in the PDF |
+
+Example `backend/.env`:
+
+```env
+OPENAI_API_KEY=sk-...
+OPENAI_TEXT_MODEL=gpt-4o-mini
+OPENAI_EMBEDDING_MODEL=text-embedding-3-small
+OPENAI_IMAGE_MODEL=gpt-image-2.5-flare
+OPENAI_IMAGE_QUALITY=low
+OPENAI_IMAGE_SIZE=816x816
+```
+
 ## Setup
 
 ```bash
@@ -105,7 +131,7 @@ npm install
 cp backend/.env.example backend/.env
 ```
 
-Set `OPENAI_API_KEY` in `backend/.env`. Image defaults: `gpt-image-2.5-flare`, quality `low`, size `816x816`.
+Set `OPENAI_API_KEY` and adjust models if needed (see **OpenAI models** above).
 
 ## Develop
 

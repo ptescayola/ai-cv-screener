@@ -3,9 +3,9 @@ type ChatResponseBody = {
   sources: Array<{ fileName: string }>
 }
 
-export async function postChatMessage(
+export async function fetchChatAnswer(
   message: string,
-): Promise<ChatResponseBody> {
+): Promise<{ answer: string; sources: string[] }> {
   const response = await fetch('/api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -29,5 +29,8 @@ export async function postChatMessage(
     throw new Error('Chat response was invalid')
   }
 
-  return body
+  return {
+    answer: body.answer,
+    sources: body.sources.map((source) => source.fileName),
+  }
 }

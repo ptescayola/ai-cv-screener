@@ -1,5 +1,5 @@
-import { useCallback, useState } from 'react'
-import { askCvQuestion } from '../modules/chat/application/askCvQuestion'
+import { useCallback, useRef, useState } from 'react'
+import { fetchChatAnswer } from '../modules/chat/infrastructure/chatClient'
 import type { ChatMessage } from '../modules/chat/model/chat'
 
 function createMessage(
@@ -12,6 +12,7 @@ function createMessage(
     role,
     content,
     sources,
+    createdAt: Date.now(),
   }
 }
 
@@ -19,40 +20,63 @@ export function useChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [draft, setDraft] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const activeRequestRef = useRef(0)
 
-  const sendMessage = useCallback(async () => {
-    const text = draft.trim()
-    if (!text || isLoading) {
-      return
-    }
-
+  const resetChat = useCallback(() => {
+    activeRequestRef.current += 1
+    setMessages([])
     setDraft('')
-    setMessages((current) => [...current, createMessage('user', text)])
-    setIsLoading(true)
+    setIsLoading(false)
+  }, [])
 
-    try {
-      const { answer, sources } = await askCvQuestion(text)
-      setMessages((current) => [
-        ...current,
-        createMessage('assistant', answer, sources),
-      ])
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Something went wrong'
-      setMessages((current) => [
-        ...current,
-        createMessage('assistant', message),
-      ])
-    } finally {
-      setIsLoading(false)
-    }
-  }, [draft, isLoading])
+  const sendMessage = useCallback(
+    async (overrideText?: string) => {
+      const text = (overrideText ?? draft).trim()
+      if (!text || isLoading) {
+        return
+      }
+
+      const requestId = activeRequestRef.current + 1
+      activeRequestRef.current = requestId
+
+      setDraft('')
+      setMessages((current) => [...current, createMessage('user', text)])
+      setIsLoading(true)
+
+      try {
+        const { answer, sources } = await fetchChatAnswer(text)
+        if (activeRequestRef.current !== requestId) {
+          return
+        }
+        setMessages((current) => [
+          ...current,
+          createMessage('assistant', answer, sources),
+        ])
+      } catch (error) {
+        if (activeRequestRef.current !== requestId) {
+          return
+        }
+        const message =
+          error instanceof Error ? error.message : 'Something went wrong'
+        setMessages((current) => [
+          ...current,
+          createMessage('assistant', message),
+        ])
+      } finally {
+        if (activeRequestRef.current === requestId) {
+          setIsLoading(false)
+        }
+      }
+    },
+    [draft, isLoading],
+  )
 
   return {
     messages,
     draft,
     setDraft,
     sendMessage,
+    resetChat,
     isLoading,
   }
 }

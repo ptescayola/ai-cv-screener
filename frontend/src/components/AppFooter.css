@@ -1,0 +1,24 @@
+.app-footer {
+  width: 100%;
+  padding-block: var(--space-3);
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.app-footer__text {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.app-footer__text a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  transition: color 0.15s ease;
+}
+
+.app-footer__text a:hover {
+  color: var(--accent);
+}

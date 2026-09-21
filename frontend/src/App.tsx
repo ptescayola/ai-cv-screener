@@ -1,24 +1,26 @@
+import { AppFooter } from './components/AppFooter'
 import { AppHeader } from './components/AppHeader'
+import { AppLayout } from './components/AppLayout'
 import { Chat } from './components/Chat'
 import { useChat } from './hooks/useChat'
-import './App.css'
 
 function App() {
-  const { messages, draft, setDraft, sendMessage, isLoading } = useChat()
+  const { messages, draft, setDraft, sendMessage, resetChat, isLoading } =
+    useChat()
 
   return (
-    <div className="app">
-      <AppHeader />
+    <AppLayout header={<AppHeader />} footer={<AppFooter />}>
       <Chat
         messages={messages}
         draft={draft}
         isLoading={isLoading}
         onDraftChange={setDraft}
-        onSend={() => {
-          void sendMessage()
+        onSend={(text) => {
+          void sendMessage(text)
         }}
+        onReset={resetChat}
       />
-    </div>
+    </AppLayout>
   )
 }
 
