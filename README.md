@@ -22,9 +22,9 @@ hooks/             useChat wires UI → modules/chat/application
 ## Backend layout
 
 ```
-domain/          types (CV profile, RAG metadata)
-application/     generateCv, ingestCvs, searchCvChunks
-infrastructure/  OpenAI, PDF read/render, filesystem, Vectra index
+domain/agents/   LLM agent definitions (prompts, temperature, buildUserMessage)
+application/     generateCv, ingestCvs, searchCvChunks, answerCvQuestion
+infrastructure/  openAi/runAgents (runChatAgent, runImageAgent), PDF, Vectra
 composition/     Express app wiring
 scripts/         generateCvs, ingestCvs CLIs
 api/             HTTP routes (`POST /chat`)
@@ -62,10 +62,10 @@ Use this flow when explaining the project in the video:
    `createRandomCvBlueprint()` in `domain/cvBlueprint.ts`
 
 2. **Texto** — fictional CV content as structured JSON  
-   `generateCvProfile(blueprint)` in `infrastructure/openAiClient.ts`
+   Prompts in `domain/agents/cvProfileAgent.ts` → `generateCvProfile()` in `infrastructure/openAiClient.ts`
 
 3. **Foto** — AI headshot for the PDF  
-   `generateCvPhoto(profile)` in `infrastructure/openAiClient.ts`
+   `domain/agents/cvPhotoAgent.ts` → `generateCvPhoto()`
 
 4. **PDF** — layout (text + photo, no overlap)  
    `renderCvPdf(profile, photo)` in `infrastructure/pdfCvRender.ts`
