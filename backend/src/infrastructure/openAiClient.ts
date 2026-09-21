@@ -2,8 +2,8 @@ import OpenAI from 'openai'
 import type { CvGenerationBlueprint } from '../domain/cvBlueprint.js'
 import type { CvProfile } from '../domain/cvProfile.js'
 import { env } from '../config/env.js'
-import { downloadImage } from '../utils/http.js'
-import { parseCvProfile } from '../utils/cvProfileParser.js'
+import { downloadImage } from '../utils/image.js'
+import { parseCvProfile } from '../utils/text.js'
 
 const client = new OpenAI({ apiKey: env.openAiApiKey })
 
@@ -94,4 +94,19 @@ export async function generateCvPhoto(profile: CvProfile): Promise<Buffer> {
   }
 
   throw new Error('OpenAI returned no image data')
+}
+
+export async function embedTexts(texts: string[]): Promise<number[][]> {
+  if (texts.length === 0) {
+    return []
+  }
+
+  const response = await client.embeddings.create({
+    model: env.openAiEmbeddingModel,
+    input: texts,
+  })
+
+  return [...response.data]
+    .sort((left, right) => left.index - right.index)
+    .map((item) => item.embedding)
 }

@@ -1,6 +1,6 @@
 # CV Screener
 
-Monorepo with a React frontend (chat over CVs) and an Express backend. CV PDFs are generated offline as a data-prep step; RAG ingestion comes later.
+Monorepo with a React frontend (chat over CVs) and an Express backend. CV PDFs are generated offline, then ingested into a local vector index for RAG.
 
 ```
 cv-screener/
@@ -11,11 +11,11 @@ cv-screener/
 ## Backend layout
 
 ```
-domain/          types and domain helpers
-application/     CV generation pipeline (`generateCv.ts`)
-infrastructure/  OpenAI, PDFKit, filesystem
+domain/          types (CV profile, RAG metadata)
+application/     generateCv, ingestCvs, searchCvChunks
+infrastructure/  OpenAI, PDF read/render, filesystem, Vectra index
 composition/     Express app wiring
-scripts/         offline data generation CLI
+scripts/         generateCvs, ingestCvs CLIs
 api/             Express app (health check for now)
 ```
 
@@ -25,6 +25,12 @@ This is **data prep**, not part of the live chat demo. Run once from the termina
 
 ```bash
 npm run generate:cvs
+```
+
+That generates PDFs and then runs **ingest** (text → chunks → embeddings → Vectra index). To rebuild the index from existing PDFs only:
+
+```bash
+npm run ingest:cvs
 ```
 
 Optional count (1–30):
@@ -57,6 +63,19 @@ Use this flow when explaining the project in the video:
    `saveCvPdf(pdf, profile, outputDir)` in `infrastructure/fsCvStorage.ts`
 
 For deliverables: walk through `generateCv.ts` + run the script + show PDFs on disk. Optional samples in `backend/data/cvs/examples/`; bulk PDFs are gitignored.
+
+## RAG ingestion
+
+`ingestCvs()` in `application/ingestCvs.ts` (also runs at the end of `generate:cvs`):
+
+1. List PDFs → read embedded text (`pdfTextReader.ts`, pdf.js).
+2. Split into chunks (`utils/text.ts`, ~900 chars).
+3. Embed with OpenAI (`embedTexts` in `openAiClient.ts`).
+4. Store in a local **Vectra** index (`vectorIndex.ts` → `backend/data/vector-index/`).
+
+For retrieval (chat next): `searchCvChunks(query)` embeds the question and returns the closest chunks.
+
+**Vectra** keeps the MVP simple: no Postgres, Docker, or cloud vector DB—just JSON on disk, fine for dozens of CVs.
 
 ## Setup
 

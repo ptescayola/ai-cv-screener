@@ -6,6 +6,7 @@
     "dev:backend": "npm run dev --workspace=backend",
     "dev:frontend": "npm run dev --workspace=frontend",
     "generate:cvs": "npm run generate:cvs --workspace=backend",
+    "ingest:cvs": "npm run ingest:cvs --workspace=backend",
     "test": "npm run test --workspace=backend"
   }
 }
