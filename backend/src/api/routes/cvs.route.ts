@@ -1,9 +1,9 @@
 import { access } from 'node:fs/promises'
 import path from 'node:path'
 import { Router } from 'express'
-import { env } from '../../config/env.js'
-import { HttpError } from '../errors/httpError.js'
-import { resolveCvPdfPath } from '../../utils/safePdfFileName.js'
+import { env } from '@/config/env.js'
+import { HttpError } from '@/api/errors/httpError.js'
+import { resolveCvPdfPath } from '@/utils/safePdfFileName.js'
 
 export const cvsRouter = Router()
 

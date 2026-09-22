@@ -1,6 +1,6 @@
 import { LocalIndex } from 'vectra'
-import type { ChunkSearchHit, StoredChunkMetadata } from '../domain/rag.js'
-import { env } from '../config/env.js'
+import type { ChunkSearchHit, StoredChunkMetadata } from '@/domain/rag.js'
+import { env } from '@/config/env.js'
 
 function openIndex(): LocalIndex<StoredChunkMetadata> {
   return new LocalIndex<StoredChunkMetadata>(env.vectorIndexDir)

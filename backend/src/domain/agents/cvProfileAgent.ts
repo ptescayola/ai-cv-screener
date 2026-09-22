@@ -1,5 +1,5 @@
-import type { CvGenerationBlueprint } from '../cvBlueprint.js'
-import type { LlmChatAgent } from './types.js'
+import type { CvGenerationBlueprint } from '@/domain/cvBlueprint.js'
+import type { LlmChatAgent } from '@/domain/agents/types.js'
 
 export const cvProfileJsonShape = {
   fullName: 'string',

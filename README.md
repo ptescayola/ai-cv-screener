@@ -55,39 +55,32 @@ npm run generate:cvs -- 28
 CV_GENERATION_COUNT=28 npm run generate:cvs --workspace=backend
 ```
 
-`scripts/generateCvs.ts` loops and calls `application/generateCv.ts` for each PDF.
 
-### Pipeline (same order as `generateCv()`)
-
-Use this flow when explaining the project in the video:
+### Pipeline
 
 1. **Blueprint** — random role, language, seniority, industry  
    `createRandomCvBlueprint()` in `domain/cvBlueprint.ts`
 
-2. **Texto** — fictional CV content as structured JSON  
+2. **Text** — fictional CV content as structured JSON  
    Prompts in `domain/agents/cvProfileAgent.ts` → `generateCvProfile()` in `infrastructure/openAiClient.ts`
 
-3. **Foto** — AI headshot for the PDF  
+3. **Photo** — AI headshot for the PDF  
    `domain/agents/cvPhotoAgent.ts` → `generateCvPhoto()`
 
 4. **PDF** — layout (text + photo, no overlap)  
    `renderCvPdf(profile, photo)` in `infrastructure/pdfCvRender.ts`
 
-5. **Disco** — save under `backend/data/cvs/`  
+5. **Disk** — save under `backend/data/cvs/`  
    `saveCvPdf(pdf, profile, outputDir)` in `infrastructure/fsCvStorage.ts`
-
-For deliverables: walk through `generateCv.ts` + run the script + show PDFs on disk. Optional samples in `backend/data/cvs/examples/`; bulk PDFs are gitignored.
 
 ## RAG ingestion
 
-`ingestCvs()` in `application/ingestCvs.ts` (also runs at the end of `generate:cvs`):
+`ingestCvs()` in `application/ingestCvs.ts`:
 
 1. List PDFs → read embedded text (`pdfTextReader.ts`, pdf.js).
 2. Split into chunks (`utils/text.ts`, ~900 chars).
 3. Embed with OpenAI (`embedTexts` in `openAiClient.ts`).
 4. Store in a local **Vectra** index (`vectorIndex.ts` → `backend/data/vector-index/`).
-
-For retrieval: `searchCvChunks(query)` embeds the question and returns the closest chunks.
 
 **Vectra** keeps the MVP simple: no Postgres, Docker, or cloud vector DB—just JSON on disk, fine for dozens of CVs.
 
@@ -103,7 +96,7 @@ The Vite dev server proxies `/api/*` to the backend (e.g. frontend calls `/api/c
 
 ## OpenAI models
 
-All models are configured via `backend/.env` (see `backend/src/config/env.ts`).
+All models are configured via `backend/.env`.
 
 | Env variable | Default | Where it is used |
 |--------------|---------|------------------|
@@ -114,32 +107,38 @@ All models are configured via `backend/.env` (see `backend/src/config/env.ts`).
 | `OPENAI_IMAGE_QUALITY` | `low` | Image generation quality |
 | `OPENAI_IMAGE_SIZE` | `816x816` | Headshot dimensions in the PDF |
 
-Example `backend/.env`:
 
-```env
-OPENAI_API_KEY=sk-...
-OPENAI_TEXT_MODEL=gpt-4o-mini
-OPENAI_EMBEDDING_MODEL=text-embedding-3-small
-OPENAI_IMAGE_MODEL=gpt-image-2.5-flare
-OPENAI_IMAGE_QUALITY=low
-OPENAI_IMAGE_SIZE=816x816
-```
 
 ## Setup
 
 ```bash
 npm install
-cp backend/.env.example backend/.env
+cp backend/.env
 ```
 
-Set `OPENAI_API_KEY` and adjust models if needed (see **OpenAI models** above).
+Set `backend/.env`:
+
+```env
+OPENAI_API_KEY=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
+OPENAI_TEXT_MODEL=gpt-4o-mini
+OPENAI_IMAGE_MODEL=gpt-image-2.5-flare
+OPENAI_IMAGE_QUALITY=low
+OPENAI_IMAGE_SIZE=816x816
+PORT=3001
+OPENAI_EMBEDDING_MODEL=text-embedding-3-small
+CV_OUTPUT_DIR=./data/cvs
+CV_GENERATION_COUNT=5
+VECTOR_INDEX_DIR=./data/vector-index
+```
+
+Disclamer about `OPENAI_API_KEY` yes it's real api key of my own personal use, limited usage and only availbale for this test.
 
 ## Develop
 
 ```bash
-npm run dev:backend   # http://localhost:3001
-npm run dev:frontend  # http://localhost:5173
-npm run test          # backend + frontend unit tests
+npm run dev:backend
+npm run dev:frontend
+npm run test
 npm run test:backend
 npm run test:frontend
 ```

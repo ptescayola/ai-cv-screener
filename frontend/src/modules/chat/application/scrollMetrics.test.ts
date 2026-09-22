@@ -4,7 +4,7 @@ import {
   CHAT_SCROLL_BOTTOM_THRESHOLD_PX,
   distanceFromBottom,
   isNearChatBottom,
-} from './scrollMetrics.ts'
+} from '@/modules/chat/application/scrollMetrics'
 
 describe('scrollMetrics', () => {
   it('computes distance from the bottom', () => {

@@ -36,7 +36,7 @@ export function AppFooter() {
       <div className="layout-inner app-footer__bar">
         <p className="app-footer__name">Pere Torres Escayola</p>
         <p className="app-footer__powered">
-          Powered by{' '}
+          AI-powered by{' '}
           <a
             className="app-footer__powered-link"
             href={OPENAI_URL}

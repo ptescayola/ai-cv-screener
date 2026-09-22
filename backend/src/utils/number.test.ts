@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
-import { parseGenerationCount } from './number.js'
+import { parseGenerationCount } from '@/utils/number.js'
 
 describe('parseGenerationCount', () => {
   it('uses CLI arg when provided', () => {

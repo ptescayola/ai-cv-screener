@@ -1,6 +1,6 @@
 import { DocumentTextIcon } from '@heroicons/react/24/outline'
-import { cvDownloadUrl } from '../modules/chat/infrastructure/cvDownloadUrl'
-import { stripPdfExtension } from '../utils/string'
+import { cvDownloadUrl } from '@/modules/chat/infrastructure/cvDownloadUrl'
+import { stripPdfExtension } from '@/utils/string'
 import './SourceChips.css'
 
 type SourceChipsProps = {

@@ -1,5 +1,5 @@
 import path from 'node:path'
-import { HttpError } from '../api/errors/httpError.js'
+import { HttpError } from '@/api/errors/httpError.js'
 
 export function resolveCvPdfPath(
   directory: string,

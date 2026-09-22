@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import emptyChatSrc from '../assets/empty-chat.png'
+import emptyChatSrc from '@/assets/empty-chat.png'
 import './EmptyChatIcon.css'
 
 type EmptyChatIconProps = {

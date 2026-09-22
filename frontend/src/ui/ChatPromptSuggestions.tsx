@@ -1,4 +1,4 @@
-import { CHAT_PROMPT_SUGGESTIONS } from '../constants/chatPromptSuggestions'
+import { CHAT_PROMPT_SUGGESTIONS } from '@/constants/chatPromptSuggestions'
 import './ChatPromptSuggestions.css'
 
 type ChatPromptSuggestionsProps = {

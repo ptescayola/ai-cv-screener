@@ -1,6 +1,6 @@
-import type { ChunkSearchHit } from '../domain/rag.js'
-import { embedTexts } from '../infrastructure/openAiClient.js'
-import { searchSimilarChunks } from '../infrastructure/vectorIndex.js'
+import type { ChunkSearchHit } from '@/domain/rag.js'
+import { embedTexts } from '@/infrastructure/openAiClient.js'
+import { searchSimilarChunks } from '@/infrastructure/vectorIndex.js'
 
 export async function searchCvChunks(
   query: string,

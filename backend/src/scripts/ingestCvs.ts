@@ -1,5 +1,5 @@
-import { ingestCvs } from '../application/ingestCvs.js'
-import { env } from '../config/env.js'
+import { ingestCvs } from '@/application/ingestCvs.js'
+import { env } from '@/config/env.js'
 
 async function main(): Promise<void> {
   console.log(`Ingesting CVs from ${env.cvOutputDir}…`)

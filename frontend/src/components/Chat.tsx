@@ -1,11 +1,11 @@
 import { ArrowPathIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline'
 import { useEffect, useRef, type SubmitEvent } from 'react'
-import { useChatScroll } from '../hooks/useChatScroll'
-import type { ChatMessage } from '../modules/chat/model/chat'
-import { ChatBubble } from '../ui/ChatBubble'
-import { ChatPromptSuggestions } from '../ui/ChatPromptSuggestions'
-import { ChatTextarea } from '../ui/ChatTextarea'
-import { EmptyChatIcon } from '../ui/EmptyChatIcon'
+import { useChatScroll } from '@/hooks/useChatScroll'
+import type { ChatMessage } from '@/modules/chat/model/chat'
+import { ChatBubble } from '@/ui/ChatBubble'
+import { ChatPromptSuggestions } from '@/ui/ChatPromptSuggestions'
+import { ChatTextarea } from '@/ui/ChatTextarea'
+import { EmptyChatIcon } from '@/ui/EmptyChatIcon'
 import './Chat.css'
 
 interface ChatProps {

@@ -1,4 +1,4 @@
-import type { ChatMessage, ChatRole } from './chat.ts'
+import type { ChatMessage, ChatRole } from '@/modules/chat/model/chat'
 
 export function createMessage(
   role: ChatRole,

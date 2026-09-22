@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
-import { slugify } from './string.js'
+import { slugify } from '@/utils/string.js'
 
 describe('slugify', () => {
   it('normalizes names for filenames', () => {

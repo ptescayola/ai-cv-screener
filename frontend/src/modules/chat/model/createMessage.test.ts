@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
-import { createMessage } from './createMessage.ts'
+import { createMessage } from '@/modules/chat/model/createMessage'
 
 describe('createMessage', () => {
   it('builds a user message with id and timestamp', () => {

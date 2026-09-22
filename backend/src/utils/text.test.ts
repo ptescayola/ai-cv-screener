@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
-import { chunkText, extractJsonPayload, parseCvProfile } from './text.js'
+import { chunkText, extractJsonPayload, parseCvProfile } from '@/utils/text.js'
 
 describe('extractJsonPayload', () => {
   it('returns plain JSON unchanged', () => {

@@ -1,7 +1,7 @@
 import OpenAI from 'openai'
-import type { LlmChatAgent, LlmImageAgent } from '../../domain/agents/types.js'
-import { env } from '../../config/env.js'
-import { downloadImage } from '../../utils/image.js'
+import type { LlmChatAgent, LlmImageAgent } from '@/domain/agents/types.js'
+import { env } from '@/config/env.js'
+import { downloadImage } from '@/utils/image.js'
 
 const client = new OpenAI({ apiKey: env.openAiApiKey })
 

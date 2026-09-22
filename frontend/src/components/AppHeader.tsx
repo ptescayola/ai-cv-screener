@@ -1,6 +1,6 @@
 import { DocumentMagnifyingGlassIcon } from '@heroicons/react/24/outline'
-import { useTheme } from '../hooks/useTheme'
-import { Toggle } from '../ui/Toggle'
+import { useTheme } from '@/hooks/useTheme'
+import { Toggle } from '@/ui/Toggle'
 import './AppHeader.css'
 
 export function AppHeader() {

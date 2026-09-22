@@ -4,10 +4,10 @@ import {
   chatErrorMessage,
   isStaleChatRequest,
   resolveOutgoingMessage,
-} from '../modules/chat/application/outgoingMessage'
-import { fetchChatAnswer } from '../modules/chat/infrastructure/chatClient'
-import { createMessage } from '../modules/chat/model/createMessage'
-import type { ChatMessage } from '../modules/chat/model/chat'
+} from '@/modules/chat/application/outgoingMessage'
+import { fetchChatAnswer } from '@/modules/chat/infrastructure/chatClient'
+import { createMessage } from '@/modules/chat/model/createMessage'
+import type { ChatMessage } from '@/modules/chat/model/chat'
 
 export function useChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([])

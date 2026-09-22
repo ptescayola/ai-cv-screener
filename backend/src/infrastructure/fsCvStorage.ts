@@ -1,8 +1,8 @@
 import { mkdir, readdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { randomUUID } from 'node:crypto'
-import type { CvProfile, GeneratedCv } from '../domain/cvProfile.js'
-import { slugify } from '../utils/string.js'
+import type { CvProfile, GeneratedCv } from '@/domain/cvProfile.js'
+import { slugify } from '@/utils/string.js'
 
 export async function listCvPdfFiles(directory: string): Promise<string[]> {
   const entries = await readdir(directory, { withFileTypes: true })

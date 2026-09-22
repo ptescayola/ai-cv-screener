@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { afterEach, describe, it, mock } from 'node:test'
-import { fetchChatAnswer } from './chatClient.ts'
+import { fetchChatAnswer } from '@/modules/chat/infrastructure/chatClient'
 
 function jsonResponse(
   init: ResponseInit & { body: unknown },

@@ -1,4 +1,4 @@
-import type { LlmImageAgent } from './types.js'
+import type { LlmImageAgent } from '@/domain/agents/types.js'
 
 export const cvPhotoAgent: LlmImageAgent<string> = {
   buildPrompt(photoDescription) {

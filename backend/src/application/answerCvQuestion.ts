@@ -1,6 +1,6 @@
-import type { CvChatAnswer } from '../domain/chat.js'
-import { searchCvChunks } from './searchCvChunks.js'
-import { generateCvChatAnswer } from '../infrastructure/openAiClient.js'
+import { searchCvChunks } from '@/application/searchCvChunks.js'
+import type { CvChatAnswer } from '@/domain/chat.js'
+import { generateCvChatAnswer } from '@/infrastructure/openAiClient.js'
 
 const RETRIEVAL_TOP_K = 5
 

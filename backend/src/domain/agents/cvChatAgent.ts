@@ -1,5 +1,5 @@
-import type { ChunkSearchHit } from '../rag.js'
-import type { LlmChatAgent } from './types.js'
+import type { ChunkSearchHit } from '@/domain/rag.js'
+import type { LlmChatAgent } from '@/domain/agents/types.js'
 
 export type CvChatAgentInput = {
   question: string

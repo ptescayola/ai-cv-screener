@@ -1,7 +1,7 @@
 import { useCallback, useLayoutEffect, useRef, useState } from 'react'
-import { chatThreadKey } from '../modules/chat/application/chatThreadKey'
-import { isNearChatBottom } from '../modules/chat/application/scrollMetrics'
-import type { ChatMessage } from '../modules/chat/model/chat'
+import { chatThreadKey } from '@/modules/chat/application/chatThreadKey'
+import { isNearChatBottom } from '@/modules/chat/application/scrollMetrics'
+import type { ChatMessage } from '@/modules/chat/model/chat'
 
 function isNearBottom(element: HTMLElement): boolean {
   return isNearChatBottom(

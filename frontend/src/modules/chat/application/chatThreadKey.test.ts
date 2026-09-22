@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
-import type { ChatMessage } from '../model/chat.ts'
-import { chatThreadKey } from './chatThreadKey.ts'
+import { chatThreadKey } from '@/modules/chat/application/chatThreadKey'
+import type { ChatMessage } from '@/modules/chat/model/chat'
 
 function message(id: string): ChatMessage {
   return {

@@ -1,4 +1,4 @@
-import type { ChatMessage } from '../model/chat.ts'
+import type { ChatMessage } from '@/modules/chat/model/chat'
 
 export function chatThreadKey(
   messages: ChatMessage[],

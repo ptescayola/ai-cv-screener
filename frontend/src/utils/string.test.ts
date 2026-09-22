@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
-import { stripPdfExtension } from './string.ts'
+import { stripPdfExtension } from '@/utils/string'
 
 describe('stripPdfExtension', () => {
   it('removes a trailing .pdf extension', () => {

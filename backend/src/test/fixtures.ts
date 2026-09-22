@@ -1,4 +1,4 @@
-import type { CvProfile } from '../domain/cvProfile.js'
+import type { CvProfile } from '@/domain/cvProfile.js'
 
 export const sampleCvProfile: CvProfile = {
   fullName: 'Ada Lovelace',

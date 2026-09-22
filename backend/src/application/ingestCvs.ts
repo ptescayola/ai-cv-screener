@@ -1,11 +1,11 @@
 import path from 'node:path'
-import type { IngestSummary, StoredChunkMetadata } from '../domain/rag.js'
-import { env } from '../config/env.js'
-import { listCvPdfFiles } from '../infrastructure/fsCvStorage.js'
-import { extractPdfEmbeddedText } from '../infrastructure/pdfTextReader.js'
-import { embedTexts } from '../infrastructure/openAiClient.js'
-import { rebuildVectorIndex } from '../infrastructure/vectorIndex.js'
-import { chunkText } from '../utils/text.js'
+import type { IngestSummary, StoredChunkMetadata } from '@/domain/rag.js'
+import { env } from '@/config/env.js'
+import { listCvPdfFiles } from '@/infrastructure/fsCvStorage.js'
+import { extractPdfEmbeddedText } from '@/infrastructure/pdfTextReader.js'
+import { embedTexts } from '@/infrastructure/openAiClient.js'
+import { rebuildVectorIndex } from '@/infrastructure/vectorIndex.js'
+import { chunkText } from '@/utils/text.js'
 
 export async function ingestCvs(): Promise<IngestSummary> {
   const pdfPaths = await listCvPdfFiles(env.cvOutputDir)

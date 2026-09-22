@@ -1,7 +1,7 @@
-import { generateCv } from '../application/generateCv.js'
-import { ingestCvs } from '../application/ingestCvs.js'
-import { env } from '../config/env.js'
-import { parseGenerationCount } from '../utils/number.js'
+import { generateCv } from '@/application/generateCv.js'
+import { ingestCvs } from '@/application/ingestCvs.js'
+import { env } from '@/config/env.js'
+import { parseGenerationCount } from '@/utils/number.js'
 
 async function main(): Promise<void> {
   const count = parseGenerationCount(process.argv[2], env.cvGenerationCount)

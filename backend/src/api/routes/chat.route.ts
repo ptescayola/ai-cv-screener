@@ -1,6 +1,6 @@
 import { Router } from 'express'
-import { answerCvQuestion } from '../../application/answerCvQuestion.js'
-import { HttpError } from '../errors/httpError.js'
+import { answerCvQuestion } from '@/application/answerCvQuestion.js'
+import { HttpError } from '@/api/errors/httpError.js'
 
 export const chatRouter = Router()
 

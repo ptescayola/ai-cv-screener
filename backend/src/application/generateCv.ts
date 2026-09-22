@@ -1,12 +1,12 @@
-import { createRandomCvBlueprint } from '../domain/cvBlueprint.js'
-import type { GeneratedCv } from '../domain/cvProfile.js'
-import { env } from '../config/env.js'
-import { saveCvPdf } from '../infrastructure/fsCvStorage.js'
+import { createRandomCvBlueprint } from '@/domain/cvBlueprint.js'
+import type { GeneratedCv } from '@/domain/cvProfile.js'
+import { env } from '@/config/env.js'
+import { saveCvPdf } from '@/infrastructure/fsCvStorage.js'
 import {
   generateCvPhoto,
   generateCvProfile,
-} from '../infrastructure/openAiClient.js'
-import { renderCvPdf } from '../infrastructure/pdfCvRender.js'
+} from '@/infrastructure/openAiClient.js'
+import { renderCvPdf } from '@/infrastructure/pdfCvRender.js'
 
 export async function generateCv(): Promise<GeneratedCv> {
   const blueprint = createRandomCvBlueprint()

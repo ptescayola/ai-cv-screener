@@ -5,7 +5,7 @@ import {
   chatErrorMessage,
   isStaleChatRequest,
   resolveOutgoingMessage,
-} from './outgoingMessage.ts'
+} from '@/modules/chat/application/outgoingMessage'
 
 describe('resolveOutgoingMessage', () => {
   it('uses override text when provided', () => {

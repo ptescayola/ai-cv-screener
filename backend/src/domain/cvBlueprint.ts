@@ -1,4 +1,4 @@
-import { pickRandom } from '../utils/random.js'
+import { pickRandom } from '@/utils/random.js'
 
 export interface CvGenerationBlueprint {
   role: string

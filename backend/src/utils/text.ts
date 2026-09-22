@@ -1,4 +1,4 @@
-import type { CvProfile } from '../domain/cvProfile.js'
+import type { CvProfile } from '@/domain/cvProfile.js'
 
 const DEFAULT_CHUNK_MAX_CHARS = 900
 const DEFAULT_CHUNK_OVERLAP = 150

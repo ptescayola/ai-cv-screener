@@ -1,5 +1,5 @@
 import PDFDocument from 'pdfkit'
-import type { CvProfile } from '../domain/cvProfile.js'
+import type { CvProfile } from '@/domain/cvProfile.js'
 
 type PdfDocumentInstance = InstanceType<typeof PDFDocument>
 

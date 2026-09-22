@@ -1,4 +1,4 @@
-export type { LlmChatAgent, LlmImageAgent } from './types.js'
-export { cvProfileAgent, cvProfileJsonShape } from './cvProfileAgent.js'
-export { cvPhotoAgent } from './cvPhotoAgent.js'
-export { cvChatAgent, type CvChatAgentInput } from './cvChatAgent.js'
+export type { LlmChatAgent, LlmImageAgent } from '@/domain/agents/types.js'
+export { cvProfileAgent, cvProfileJsonShape } from '@/domain/agents/cvProfileAgent.js'
+export { cvPhotoAgent } from '@/domain/agents/cvPhotoAgent.js'
+export { cvChatAgent, type CvChatAgentInput } from '@/domain/agents/cvChatAgent.js'
