@@ -119,7 +119,7 @@ cp backend/.env
 Set `backend/.env`:
 
 ```env
-OPENAI_API_KEY=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
+OPENAI_API_KEY=
 OPENAI_TEXT_MODEL=gpt-4o-mini
 OPENAI_IMAGE_MODEL=gpt-image-2.5-flare
 OPENAI_IMAGE_QUALITY=low
@@ -130,8 +130,6 @@ CV_OUTPUT_DIR=./data/cvs
 CV_GENERATION_COUNT=5
 VECTOR_INDEX_DIR=./data/vector-index
 ```
-
-Disclamer about `OPENAI_API_KEY` yes it's real api key of my own personal use, limited usage and only availbale for this test.
 
 ## Develop
 
