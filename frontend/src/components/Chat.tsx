@@ -6,12 +6,14 @@ import { CHAT_PROMPT_SUGGESTIONS } from '@/constants/chatPromptSuggestions'
 import { Button } from '@/components/ui/Button'
 import { ChatBubble } from '@/components/ui/chat/ChatBubble'
 import { ChatTextarea } from '@/components/ui/chat/ChatTextarea'
+import { ChatEmptyNoDataset } from '@/components/ui/chat/ChatEmptyNoDataset'
 import { EmptyChatIcon } from '@/components/ui/chat/EmptyChatIcon'
 
 interface ChatProps {
   messages: ChatMessage[]
   draft: string
   isLoading: boolean
+  datasetReady: boolean | null
   onDraftChange: (value: string) => void
   onSend: (text?: string) => void
   onReset: () => void
@@ -24,6 +26,7 @@ export function Chat({
   onDraftChange,
   onSend,
   onReset,
+  datasetReady,
 }: ChatProps) {
   const composerRef = useRef<HTMLTextAreaElement>(null)
   const { containerRef, showJumpToLatest, handleScroll, jumpToLatest } =
@@ -35,7 +38,8 @@ export function Chat({
     }
   }, [isLoading])
 
-  const canSend = draft.trim().length > 0 && !isLoading
+  const chatEnabled = datasetReady === true
+  const canSend = chatEnabled && draft.trim().length > 0 && !isLoading
   const isEmpty = messages.length === 0 && !isLoading
 
   function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
@@ -64,27 +68,37 @@ export function Chat({
           onScroll={handleScroll}
         >
           {isEmpty ? (
-            <div className="flex min-h-full flex-col items-center justify-center gap-4 px-4 py-6 text-center">
-              <EmptyChatIcon className="opacity-[0.92]" />
-              <p className="m-0 max-w-[32ch] text-[0.9375rem] leading-normal text-muted-foreground">
-                Ask about the CVs in the dataset, or try a suggestion:
-              </p>
-              <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
-                {CHAT_PROMPT_SUGGESTIONS.map((prompt) => (
-                  <li key={prompt}>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="xs"
-                      disabled={isLoading}
-                      onClick={() => onSend(prompt)}
-                    >
-                      {prompt}
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            datasetReady === false ? (
+              <ChatEmptyNoDataset />
+            ) : datasetReady === null ? (
+              <div className="flex min-h-full items-center justify-center px-4 py-6">
+                <p className="m-0 text-sm text-muted-foreground">
+                  Checking dataset…
+                </p>
+              </div>
+            ) : (
+              <div className="flex min-h-full flex-col items-center justify-center gap-4 px-4 py-6 text-center">
+                <EmptyChatIcon className="opacity-[0.92]" />
+                <p className="m-0 max-w-[32ch] text-[0.9375rem] leading-normal text-muted-foreground">
+                  Ask about the CVs in the dataset, or try a suggestion:
+                </p>
+                <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
+                  {CHAT_PROMPT_SUGGESTIONS.map((prompt) => (
+                    <li key={prompt}>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="xs"
+                        disabled={isLoading}
+                        onClick={() => onSend(prompt)}
+                      >
+                        {prompt}
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
           ) : (
             <ul className="m-0 flex list-none flex-col gap-6 px-1 pt-2 pb-3">
               {messages.map((message) => (
@@ -129,9 +143,13 @@ export function Chat({
             <ChatTextarea
               id="chat-input"
               inputRef={composerRef}
-              placeholder="Who has experience with TypeScript?"
+              placeholder={
+                chatEnabled
+                  ? 'Who has experience with TypeScript?'
+                  : 'Generate CVs first (see above)'
+              }
               value={draft}
-              disabled={isLoading}
+              disabled={!chatEnabled || isLoading}
               onChange={onDraftChange}
               onEnterSubmit={() => {
                 if (canSend) {

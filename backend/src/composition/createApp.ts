@@ -3,6 +3,7 @@ import express from 'express'
 import { errorMiddleware } from '@/api/middleware/error.middleware.js'
 import { chatRouter } from '@/api/routes/chat.route.js'
 import { cvsRouter } from '@/api/routes/cvs.route.js'
+import { datasetRouter } from '@/api/routes/dataset.route.js'
 
 export function createApp() {
   const app = express()
@@ -16,6 +17,7 @@ export function createApp() {
 
   app.use('/chat', chatRouter)
   app.use('/cvs', cvsRouter)
+  app.use('/dataset', datasetRouter)
 
   app.use(errorMiddleware)
 

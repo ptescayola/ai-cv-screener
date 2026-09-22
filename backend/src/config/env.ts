@@ -26,7 +26,7 @@ export const env = {
   openAiImageQuality: process.env.OPENAI_IMAGE_QUALITY!,
   openAiImageSize: process.env.OPENAI_IMAGE_SIZE!,
   cvOutputDir: fromBackend(process.env.CV_OUTPUT_DIR ?? './data/cvs'),
-  cvGenerationCount: Number(process.env.CV_GENERATION_COUNT),
+  cvGenerationCount: Number(process.env.CV_GENERATION_COUNT ?? 25),
   vectorIndexDir: fromBackend(
     process.env.VECTOR_INDEX_DIR ?? './data/vector-index',
   ),

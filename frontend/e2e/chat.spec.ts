@@ -4,6 +4,14 @@ const mockAnswer =
   'Candidates with TypeScript experience include Ada Lovelace.'
 
 test('sends a question and shows the assistant reply', async ({ page }) => {
+  await page.route('**/api/dataset/status', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ ready: true }),
+    })
+  })
+
   await page.route('**/api/chat', async (route) => {
     if (route.request().method() !== 'POST') {
       await route.continue()

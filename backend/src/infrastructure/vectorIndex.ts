@@ -27,6 +27,11 @@ export async function rebuildVectorIndex(
   return items.length
 }
 
+export async function isVectorIndexReady(): Promise<boolean> {
+  const index = openIndex()
+  return index.isIndexCreated()
+}
+
 export async function searchSimilarChunks(
   queryVector: number[],
   queryText: string,
@@ -35,9 +40,7 @@ export async function searchSimilarChunks(
   const index = openIndex()
 
   if (!(await index.isIndexCreated())) {
-    throw new Error(
-      `Vector index not found at ${env.vectorIndexDir}. Run ingest:cvs first.`,
-    )
+    return []
   }
 
   const results = await index.queryItems(queryVector, queryText, topK)
