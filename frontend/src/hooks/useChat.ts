@@ -51,7 +51,7 @@ export function useChat() {
         }
         setMessages((current) => [
           ...current,
-          createMessage('assistant', chatErrorMessage(error)),
+          createMessage('assistant', chatErrorMessage(error), undefined, true),
         ])
       } finally {
         if (!isStaleChatRequest(activeRequestRef.current, requestId)) {

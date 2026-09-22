@@ -96,7 +96,7 @@ The Vite dev server proxies `/api/*` to the backend (e.g. frontend calls `/api/c
 
 ## OpenAI models
 
-All models are configured via `backend/.env`.
+All models are configured via `.env` at the repository root.
 
 | Env variable | Default | Where it is used |
 |--------------|---------|------------------|
@@ -113,10 +113,10 @@ All models are configured via `backend/.env`.
 
 ```bash
 npm install
-cp backend/.env
+cp .env
 ```
 
-Set `backend/.env`:
+Set `.env`:
 
 ```env
 OPENAI_API_KEY=
@@ -129,7 +129,14 @@ OPENAI_EMBEDDING_MODEL=text-embedding-3-small
 CV_OUTPUT_DIR=./data/cvs
 CV_GENERATION_COUNT=5
 VECTOR_INDEX_DIR=./data/vector-index
+VITE_GITHUB_URL=https://github.com/ptescayola
+VITE_LINKEDIN_URL=https://www.linkedin.com/in/ptescayola
+VITE_OPENAI_URL=https://openai.com
 ```
+
+## Frontend UI (shadcn)
+
+[shadcn/ui](https://ui.shadcn.com/) is initialized in `frontend/` (`components.json`, Tailwind v4). App chrome still uses custom CSS tokens (`--app-*` in `styles/global.css`); 
 
 ## Develop
 

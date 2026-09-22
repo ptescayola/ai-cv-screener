@@ -8,7 +8,9 @@ export const backendDir = path.resolve(
   '..',
 )
 
-dotenv.config({ path: path.join(backendDir, '.env') })
+export const repoRoot = path.resolve(backendDir, '..')
+
+dotenv.config({ path: path.join(repoRoot, '.env') })
 
 function fromBackend(relativePath: string): string {
   return path.resolve(backendDir, relativePath)

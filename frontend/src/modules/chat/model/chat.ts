@@ -6,4 +6,5 @@ export interface ChatMessage {
   content: string
   sources?: string[]
   createdAt: number
+  error?: boolean
 }

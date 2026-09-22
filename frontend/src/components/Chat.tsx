@@ -2,11 +2,11 @@ import { ArrowPathIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline'
 import { useEffect, useRef, type SubmitEvent } from 'react'
 import { useChatScroll } from '@/hooks/useChatScroll'
 import type { ChatMessage } from '@/modules/chat/model/chat'
-import { ChatBubble } from '@/ui/ChatBubble'
-import { ChatPromptSuggestions } from '@/ui/ChatPromptSuggestions'
-import { ChatTextarea } from '@/ui/ChatTextarea'
-import { EmptyChatIcon } from '@/ui/EmptyChatIcon'
-import './Chat.css'
+import { CHAT_PROMPT_SUGGESTIONS } from '@/constants/chatPromptSuggestions'
+import { Button } from '@/components/ui/Button'
+import { ChatBubble } from '@/components/ui/chat/ChatBubble'
+import { ChatTextarea } from '@/components/ui/chat/ChatTextarea'
+import { EmptyChatIcon } from '@/components/ui/chat/EmptyChatIcon'
 
 interface ChatProps {
   messages: ChatMessage[]
@@ -46,47 +46,54 @@ export function Chat({
   }
 
   return (
-    <section className="chat" aria-label="CV screening chat">
+    <section className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden rounded-xl border border-border bg-card p-4 shadow-sm">
       {messages.length > 0 ? (
-        <div className="chat__toolbar">
-          <button
-            type="button"
-            className="chat__reset"
-            onClick={onReset}
-          >
-            <ArrowPathIcon className="chat__reset-icon" aria-hidden="true" />
+        <div className="flex min-h-5 shrink-0 justify-end">
+          <Button type="button" variant="ghost" size="xs" onClick={onReset}>
+            <ArrowPathIcon />
             New chat
-          </button>
+          </Button>
         </div>
       ) : null}
 
-      <div className="chat__messages-wrap">
+      <div className="relative flex min-h-0 flex-1 flex-col">
         <div
           ref={containerRef}
-          className="chat__messages scroll-area"
+          className="scroll-area min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain p-1 motion-safe:scroll-smooth"
           role="log"
-          aria-live="polite"
           onScroll={handleScroll}
         >
           {isEmpty ? (
-            <div className="chat__empty">
-              <EmptyChatIcon className="chat__empty-icon" />
-              <p className="chat__empty-text">
+            <div className="flex min-h-full flex-col items-center justify-center gap-4 px-4 py-6 text-center">
+              <EmptyChatIcon className="opacity-[0.92]" />
+              <p className="m-0 max-w-[32ch] text-[0.9375rem] leading-normal text-muted-foreground">
                 Ask about the CVs in the dataset, or try a suggestion:
               </p>
-              <ChatPromptSuggestions
-                disabled={isLoading}
-                onSelect={(prompt) => onSend(prompt)}
-              />
+              <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
+                {CHAT_PROMPT_SUGGESTIONS.map((prompt) => (
+                  <li key={prompt}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="xs"
+                      disabled={isLoading}
+                      onClick={() => onSend(prompt)}
+                    >
+                      {prompt}
+                    </Button>
+                  </li>
+                ))}
+              </ul>
             </div>
           ) : (
-            <ul className="chat__message-list">
+            <ul className="m-0 flex list-none flex-col gap-6 px-1 pt-2 pb-3">
               {messages.map((message) => (
                 <ChatBubble
                   key={message.id}
                   role={message.role}
                   content={message.content}
                   sources={message.sources}
+                  error={message.error}
                   createdAt={message.createdAt}
                 />
               ))}
@@ -98,42 +105,54 @@ export function Chat({
         </div>
 
         {showJumpToLatest ? (
-          <button
+          <Button
             type="button"
-            className="chat__jump-latest"
+            variant="outline"
+            size="xs"
+            className="absolute bottom-3 left-1/2 z-5 -translate-x-1/2"
             onClick={jumpToLatest}
           >
             View latest message ↓
-          </button>
+          </Button>
         ) : null}
       </div>
 
-      <form className="chat__composer" onSubmit={handleSubmit}>
+      <form
+        className="flex shrink-0 flex-col gap-2 border-t border-border pt-3"
+        onSubmit={handleSubmit}
+      >
         <label className="sr-only" htmlFor="chat-input">
           Your question
         </label>
-        <ChatTextarea
-          id="chat-input"
-          inputRef={composerRef}
-          placeholder="Who has experience with TypeScript?"
-          value={draft}
-          disabled={isLoading}
-          onChange={onDraftChange}
-          onEnterSubmit={() => {
-            if (canSend) {
-              onSend()
-            }
-          }}
-        />
-        <div className="chat__actions">
-          <span className="chat__hint">
-            Enter to send · Shift+Enter for new line
-          </span>
-          <button type="submit" className="chat__send" disabled={!canSend}>
-            <PaperAirplaneIcon className="chat__send-icon" aria-hidden="true" />
-            {isLoading ? 'Sending…' : 'Send'}
-          </button>
+        <div className="flex items-end gap-2">
+          <div className="min-w-0 flex-1">
+            <ChatTextarea
+              id="chat-input"
+              inputRef={composerRef}
+              placeholder="Who has experience with TypeScript?"
+              value={draft}
+              disabled={isLoading}
+              onChange={onDraftChange}
+              onEnterSubmit={() => {
+                if (canSend) {
+                  onSend()
+                }
+              }}
+            />
+          </div>
+          <Button
+            type="submit"
+            size="default"
+            className="h-10 min-h-10 w-auto min-w-min shrink-0"
+            disabled={!canSend}
+          >
+            <PaperAirplaneIcon />
+            Send
+          </Button>
         </div>
+        <span className="text-xs text-muted-foreground">
+          Enter to send · Shift+Enter for new line
+        </span>
       </form>
     </section>
   )

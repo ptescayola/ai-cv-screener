@@ -4,6 +4,7 @@ export function createMessage(
   role: ChatRole,
   content: string,
   sources?: string[],
+  error = false,
 ): ChatMessage {
   return {
     id: crypto.randomUUID(),
@@ -11,5 +12,6 @@ export function createMessage(
     content,
     sources,
     createdAt: Date.now(),
+    ...(error ? { error: true } : {}),
   }
 }

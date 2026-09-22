@@ -1,6 +1,6 @@
-import { AppFooter } from '@/components/AppFooter'
-import { AppHeader } from '@/components/AppHeader'
-import { AppLayout } from '@/components/AppLayout'
+import { AppFooter } from '@/components/layout/AppFooter'
+import { AppHeader } from '@/components/layout/AppHeader'
+import { AppLayout } from '@/components/layout/AppLayout'
 import { Chat } from '@/components/Chat'
 import { useChat } from '@/hooks/useChat'
 

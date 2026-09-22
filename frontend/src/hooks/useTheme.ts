@@ -23,7 +23,7 @@ export function resolveTheme(): Theme {
 }
 
 export function applyTheme(theme: Theme) {
-  document.documentElement.dataset.theme = theme
+  document.documentElement.classList.toggle('dark', theme === 'dark')
 }
 
 export function useTheme() {

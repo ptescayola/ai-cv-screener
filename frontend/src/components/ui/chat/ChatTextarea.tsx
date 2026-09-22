@@ -4,7 +4,7 @@ import {
   type KeyboardEvent,
   type RefObject,
 } from 'react'
-import './ChatTextarea.css'
+import { Textarea } from '@/components/ui/Textarea'
 
 const MAX_HEIGHT_PX = 168
 
@@ -25,6 +25,9 @@ function resizeTextarea(element: HTMLTextAreaElement) {
   element.style.height = `${nextHeight}px`
   element.style.overflowY = scrollHeight > MAX_HEIGHT_PX ? 'auto' : 'hidden'
 }
+
+const chatTextareaClassName =
+  'min-h-[2.5rem] max-h-[10.5rem] resize-none overflow-y-hidden border-border bg-background px-3 py-2 text-xs leading-normal text-foreground placeholder:text-muted-foreground focus-visible:border-border focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-1 disabled:opacity-70'
 
 export function ChatTextarea({
   id,
@@ -59,10 +62,10 @@ export function ChatTextarea({
   }
 
   return (
-    <textarea
+    <Textarea
       ref={setTextareaRef}
       id={id}
-      className="chat-textarea"
+      className={chatTextareaClassName}
       rows={1}
       placeholder={placeholder}
       value={value}

@@ -17,11 +17,11 @@
 }
 
 :root {
-  --empty-chat-base: color-mix(in srgb, var(--muted) 72%, var(--text));
-  --empty-chat-highlight: color-mix(in srgb, var(--muted) 45%, var(--border));
+  --empty-chat-base: color-mix(in srgb, var(--muted-foreground) 72%, var(--foreground));
+  --empty-chat-highlight: color-mix(in srgb, var(--muted-foreground) 45%, var(--border));
 }
 
-:root[data-theme='dark'] {
-  --empty-chat-base: color-mix(in srgb, var(--muted) 80%, var(--surface));
-  --empty-chat-highlight: color-mix(in srgb, var(--muted) 55%, var(--text));
+.dark {
+  --empty-chat-base: color-mix(in srgb, var(--muted-foreground) 80%, var(--card));
+  --empty-chat-highlight: color-mix(in srgb, var(--muted-foreground) 55%, var(--foreground));
 }
