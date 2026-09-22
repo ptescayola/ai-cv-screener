@@ -14,23 +14,29 @@ cv-screener/
 modules/chat/
   model/           ChatMessage, createMessage
   application/     outgoing message rules, thread key, scroll metrics
-  infrastructure/  chatClient, cvDownloadUrl
-utils/             string (stripPdfExtension), date (formatMessageTime)
-hooks/             useChat (state + send), useChatScroll (message list)
-components/        AppLayout, AppHeader, AppFooter, Chat
-ui/                ChatBubble, ChatTextarea, SourceChips, …
-styles/            global.css (tokens, scroll-area)
+  infrastructure/  chatClient, cvDownloadUrl, datasetClient
+components/
+  Chat.tsx         composer, message list, empty states
+  layout/          AppLayout, AppHeader, AppFooter
+  shadcn/          shadcn/ui primitives (button, badge, textarea, …)
+  ui/              app-facing re-exports (Button, Badge, …)
+  ui/chat/         ChatBubble, ChatTextarea, ChatMessageContent, ChatEmptyNoDataset, …
+hooks/             useChat, useChatScroll, useTheme, useDatasetStatus
+constants/         prompt suggestions, generate-cvs command copy
+utils/             string (lists, PDF names), date (message timestamps)
+styles/            global.css, layout.css
+index.css          Tailwind v4 + shadcn theme tokens (light / `.dark`)
 ```
 
 ## Backend layout
 
 ```
 domain/agents/   LLM agent definitions (prompts, temperature, buildUserMessage)
-application/     generateCv, ingestCvs, searchCvChunks, answerCvQuestion
+application/     generateCv, ingestCvs, searchCvChunks, answerCvQuestion, getDatasetStatus
 infrastructure/  openAi/runAgents (runChatAgent, runImageAgent), PDF, Vectra
 composition/     Express app wiring
 scripts/         generateCvs, ingestCvs CLIs
-api/             HTTP routes (`POST /chat`, `GET /cvs/:fileName`)
+api/             HTTP routes (`POST /chat`, `GET /dataset/status`, `GET /cvs/:fileName`)
 ```
 
 ## CV generation (offline dataset)
@@ -92,7 +98,9 @@ CV_GENERATION_COUNT=28 npm run generate:cvs --workspace=backend
 { "answer": "…", "sources": [{ "fileName": "ada-lovelace-abc123.pdf" }] }
 ```
 
-The Vite dev server proxies `/api/*` to the backend (e.g. frontend calls `/api/chat`).
+The Vite dev server proxies `/api/*` to the backend (e.g. frontend calls `/api/chat`, `/api/dataset/status`).
+
+`GET /dataset/status` returns `{ "ready": true | false }` depending on whether the Vectra index exists. The chat UI uses this for the empty state (generate-CVs hint vs prompt suggestions) and to avoid hard errors when no data is indexed.
 
 ## OpenAI models
 
@@ -136,7 +144,25 @@ VITE_OPENAI_URL=https://openai.com
 
 ## Frontend UI (shadcn)
 
-[shadcn/ui](https://ui.shadcn.com/) is initialized in `frontend/` (`components.json`, Tailwind v4). App chrome still uses custom CSS tokens (`--app-*` in `styles/global.css`); 
+[shadcn/ui](https://ui.shadcn.com/) is set up in `frontend/` (`components.json`, Tailwind v4). Theme colors and radii live on shadcn CSS variables in `index.css` (`--background`, `--primary`, `--chat-bubble-user`, etc.), with dark mode via the `dark` class on `<html>` (`useTheme`).
+
+- **Components:** primitives under `components/shadcn/`, consumed through `components/ui/` where the app imports them.
+- **Chat:** source PDFs appear as download badges inside `ChatBubble` (not a separate chips component). Lists in answers are rendered in `ChatMessageContent`.
+- **Empty state:** if the vector index is missing, `ChatEmptyNoDataset` shows `npm run generate:cvs` with a copy button; otherwise suggestions from `CHAT_PROMPT_SUGGESTIONS`.
+
+## Quick demo (~5 minutes)
+
+1. **Install & env** (once): `npm install` and set `OPENAI_API_KEY` in `.env` (see [Setup](#setup)).
+2. **Generate data** (once per machine; uses OpenAI for text, images, and embeddings):
+
+   ```bash
+   npm run generate:cvs
+   ```
+
+   Default count is **25** CVs (1–30). PDFs → `backend/data/cvs/`, index → `backend/data/vector-index/`.
+
+3. **Run** (two terminals): `npm run dev:backend` and `npm run dev:frontend` → open Vite (usually [http://127.0.0.1:5173](http://127.0.0.1:5173)).
+4. **Optional:** rebuild index from existing PDFs only: `npm run ingest:cvs`.
 
 ## Develop
 
@@ -155,7 +181,7 @@ All unit tests use Node’s built-in [`node:test`](https://nodejs.org/api/test.h
 |-------|----------|----------------|
 | **Backend unit** | `backend/src/**/*.test.ts` | Application use cases with injected deps (`generateCv`, `ingestCvs`, `resolveChatSources`) and small utilities (`string`, `text`, `number`). No OpenAI or disk I/O in tests. |
 | **Frontend unit** | `frontend/src/**/*.test.ts` | Chat module (messages, thread key, scroll metrics, `chatClient`, download URLs) and shared utils (`string`, `date`). |
-| **E2E** | `frontend/e2e/*.spec.ts` | One happy path: type a question, send, assert the assistant reply in the chat log. **`POST /api/chat` is mocked** so no API key or vector index is required. Playwright starts the Vite dev server automatically. |
+| **E2E** | `frontend/e2e/*.spec.ts` | One happy path: type a question, send, assert the assistant reply in the chat log. **`/api/chat` and `/api/dataset/status` are mocked** so no API key or vector index is required. Playwright starts the Vite dev server automatically. |
 
 From the repo root:
 
@@ -171,3 +197,5 @@ First time on a machine, install Playwright browsers:
 ```bash
 cd frontend && npx playwright install
 ```
+
+**CI:** GitHub Actions (`.github/workflows/ci.yml`) runs `test:backend`, `test:frontend`, and `test:e2e` on push/PR to `main` or `master`.
