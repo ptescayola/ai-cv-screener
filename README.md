@@ -9,7 +9,7 @@ Monorepo with a React frontend (chat over CVs) and an Express backend with Hexag
 **Quality:** Unit tests (backend + frontend), Playwright e2e (mocked API), GitHub Actions CI, Husky (lint-staged + pre-push unit tests).
 
 
-## Frontend layout (`frontend/src`)
+## Frontend
 
 ```
 modules/chat/
@@ -29,7 +29,7 @@ styles/            global.css, layout.css
 index.css          Tailwind v4 + shadcn theme tokens (light / `.dark`)
 ```
 
-## Backend layout
+## Backend
 
 ```
 domain/agents/   LLM agent definitions (prompts, temperature, buildUserMessage)
@@ -39,6 +39,10 @@ composition/     Express app wiring
 scripts/         generateCvs, ingestCvs CLIs
 api/             HTTP routes (`POST /chat`, `GET /dataset/status`, `GET /cvs/:fileName`)
 ```
+
+## Workflow overview
+
+![AI CV Screener workflow overview](./docs/workflow-overview.png)
 
 ## CV generation
 
@@ -141,8 +145,6 @@ npm run dev:backend
 npm run dev:frontend
 ```
 
-Health: [http://localhost:3001/health](http://localhost:3001/health) → `{"status":"ok"}`.
-
 ## Tests
 
 All unit tests use Node’s built-in [`node:test`](https://nodejs.org/api/test.html) runner with TypeScript via `tsx`. E2E uses [Playwright](https://playwright.dev/) in the browser.
@@ -152,8 +154,6 @@ All unit tests use Node’s built-in [`node:test`](https://nodejs.org/api/test.h
 | **Backend unit** | `backend/src/**/*.test.ts` | Application use cases with injected deps (`generateCv`, `ingestCvs`, `resolveChatSources`) and small utilities (`string`, `text`, `number`). No OpenAI or disk I/O in tests. |
 | **Frontend unit** | `frontend/src/**/*.test.ts` | Chat module (messages, thread key, scroll metrics, `chatClient`, download URLs) and shared utils (`string`, `date`). |
 | **E2E** | `frontend/e2e/*.spec.ts` | One happy path: type a question, send, assert the assistant reply in the chat log. **`/api/chat` and `/api/dataset/status` are mocked** so no API key or vector index is required. Playwright starts the Vite dev server automatically. |
-
-From the repo root:
 
 ```bash
 npm run test              # backend unit + frontend unit
@@ -167,10 +167,6 @@ First time on a machine, install Playwright browsers:
 ```bash
 cd frontend && npx playwright install
 ```
-
-**CI:** GitHub Actions (`.github/workflows/ci.yml`) runs `test:backend`, `test:frontend`, and `test:e2e` on push/PR to `main` or `master`.
-
-**Git hooks (Husky):** after `npm install`, `prepare` installs hooks — **pre-commit** runs `lint-staged` (ESLint `--fix` on staged `frontend/**/*.{ts,tsx}`); **pre-push** runs `npm test` (unit tests only). E2E stays in CI.
 
 ## Assumptions & next steps
 
