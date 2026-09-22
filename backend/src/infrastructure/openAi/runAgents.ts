@@ -3,13 +3,20 @@ import type { LlmChatAgent, LlmImageAgent } from '@/domain/agents/types.js'
 import { env } from '@/config/env.js'
 import { downloadImage } from '@/utils/image.js'
 
-const client = new OpenAI({ apiKey: env.openAiApiKey })
+let client: OpenAI | undefined
+
+function getOpenAiClient(): OpenAI {
+  if (!client) {
+    client = new OpenAI({ apiKey: env.openAiApiKey })
+  }
+  return client
+}
 
 export async function runChatAgent<TInput>(
   agent: LlmChatAgent<TInput>,
   input: TInput,
 ): Promise<string> {
-  const completion = await client.chat.completions.create({
+  const completion = await getOpenAiClient().chat.completions.create({
     model: env.openAiTextModel,
     temperature: agent.temperature,
     response_format: { type: 'json_object' },
@@ -31,7 +38,7 @@ export async function runImageAgent<TInput>(
   agent: LlmImageAgent<TInput>,
   input: TInput,
 ): Promise<Buffer> {
-  const image = await client.images.generate({
+  const image = await getOpenAiClient().images.generate({
     model: env.openAiImageModel,
     prompt: agent.buildPrompt(input),
     size: env.openAiImageSize as OpenAI.Images.ImageGenerateParams['size'],
@@ -55,7 +62,7 @@ export async function embedTexts(texts: string[]): Promise<number[][]> {
     return []
   }
 
-  const response = await client.embeddings.create({
+  const response = await getOpenAiClient().embeddings.create({
     model: env.openAiEmbeddingModel,
     input: texts,
   })
