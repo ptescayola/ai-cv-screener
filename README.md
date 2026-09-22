@@ -14,7 +14,7 @@ cv-screener/
 modules/chat/
   model/           ChatMessage, createMessage
   application/     outgoing message rules, thread key, scroll metrics
-  infrastructure/  chatClient, cvDownloadUrl, datasetClient
+  infrastructure/  apiClient (axios), chatClient, datasetClient, cvDownloadUrl
 components/
   Chat.tsx         composer, message list, empty states
   layout/          AppLayout, AppHeader, AppFooter
@@ -150,19 +150,6 @@ VITE_OPENAI_URL=https://openai.com
 - **Chat:** source PDFs appear as download badges inside `ChatBubble` (not a separate chips component). Lists in answers are rendered in `ChatMessageContent`.
 - **Empty state:** if the vector index is missing, `ChatEmptyNoDataset` shows `npm run generate:cvs` with a copy button; otherwise suggestions from `CHAT_PROMPT_SUGGESTIONS`.
 
-## Quick demo (~5 minutes)
-
-1. **Install & env** (once): `npm install` and set `OPENAI_API_KEY` in `.env` (see [Setup](#setup)).
-2. **Generate data** (once per machine; uses OpenAI for text, images, and embeddings):
-
-   ```bash
-   npm run generate:cvs
-   ```
-
-   Default count is **25** CVs (1–30). PDFs → `backend/data/cvs/`, index → `backend/data/vector-index/`.
-
-3. **Run** (two terminals): `npm run dev:backend` and `npm run dev:frontend` → open Vite (usually [http://127.0.0.1:5173](http://127.0.0.1:5173)).
-4. **Optional:** rebuild index from existing PDFs only: `npm run ingest:cvs`.
 
 ## Develop
 
@@ -199,3 +186,5 @@ cd frontend && npx playwright install
 ```
 
 **CI:** GitHub Actions (`.github/workflows/ci.yml`) runs `test:backend`, `test:frontend`, and `test:e2e` on push/PR to `main` or `master`.
+
+**Git hooks (Husky):** after `npm install`, `prepare` installs hooks — **pre-commit** runs `lint-staged` (ESLint `--fix` on staged `frontend/**/*.{ts,tsx}`); **pre-push** runs `npm test` (unit tests only). E2E stays in CI.

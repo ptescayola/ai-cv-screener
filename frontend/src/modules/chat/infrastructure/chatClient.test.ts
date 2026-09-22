@@ -1,13 +1,8 @@
 import assert from 'node:assert/strict'
 import { afterEach, describe, it, mock } from 'node:test'
+import { type AxiosResponse } from 'axios'
+import { api } from '@/modules/chat/infrastructure/apiClient'
 import { fetchChatAnswer } from '@/modules/chat/infrastructure/chatClient'
-
-function jsonResponse(
-  init: ResponseInit & { body: unknown },
-): Response {
-  const { body, ...responseInit } = init
-  return Response.json(body, responseInit)
-}
 
 describe('fetchChatAnswer', () => {
   afterEach(() => {
@@ -15,25 +10,17 @@ describe('fetchChatAnswer', () => {
   })
 
   it('posts the message and maps sources to file names', async () => {
-    const fetchMock = mock.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
-      assert.equal(input, '/api/chat')
-      assert.equal(init?.method, 'POST')
-      assert.equal(
-        init?.headers &&
-          (init.headers as Record<string, string>)['Content-Type'],
-        'application/json',
-      )
-      assert.deepEqual(JSON.parse(String(init?.body)), { message: 'Who knows TS?' })
+    const postMock = mock.method(api, 'post', async (url, body) => {
+      assert.equal(url, '/chat')
+      assert.deepEqual(body, { message: 'Who knows TS?' })
 
-      return jsonResponse({
-        status: 200,
-        body: {
+      return {
+        data: {
           answer: 'Jane Doe',
           sources: [{ fileName: 'jane-doe-abc.pdf' }],
         },
-      })
+      } as AxiosResponse
     })
-    mock.method(globalThis, 'fetch', fetchMock)
 
     const result = await fetchChatAnswer('Who knows TS?')
 
@@ -41,13 +28,13 @@ describe('fetchChatAnswer', () => {
       answer: 'Jane Doe',
       sources: ['jane-doe-abc.pdf'],
     })
-    assert.equal(fetchMock.mock.callCount(), 1)
+    assert.equal(postMock.mock.callCount(), 1)
   })
 
   it('throws the server error message when the request fails', async () => {
-    mock.method(globalThis, 'fetch', async () =>
-      jsonResponse({ status: 503, body: { error: 'Index unavailable' } }),
-    )
+    mock.method(api, 'post', async () => {
+      throw new Error('Index unavailable')
+    })
 
     await assert.rejects(
       () => fetchChatAnswer('test'),
@@ -60,9 +47,9 @@ describe('fetchChatAnswer', () => {
   })
 
   it('throws when the response body is not a chat payload', async () => {
-    mock.method(globalThis, 'fetch', async () =>
-      jsonResponse({ status: 200, body: { error: 'nope' } }),
-    )
+    mock.method(api, 'post', async () => ({
+      data: { error: 'nope' },
+    }))
 
     await assert.rejects(
       () => fetchChatAnswer('test'),
