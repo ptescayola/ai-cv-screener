@@ -9,6 +9,7 @@
     "ingest:cvs": "npm run ingest:cvs --workspace=backend",
     "test": "npm run test:backend && npm run test:frontend",
     "test:backend": "npm run test --workspace=backend",
-    "test:frontend": "npm run test --workspace=frontend"
+    "test:frontend": "npm run test --workspace=frontend",
+    "test:e2e": "npm run test:e2e --workspace=frontend"
   }
 }

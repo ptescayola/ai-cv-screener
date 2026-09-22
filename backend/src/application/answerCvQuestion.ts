@@ -1,3 +1,4 @@
+import { resolveChatSources } from '@/application/resolveChatSources.js'
 import { searchCvChunks } from '@/application/searchCvChunks.js'
 import type { CvChatAnswer } from '@/domain/chat.js'
 import { generateCvChatAnswer } from '@/infrastructure/openAiClient.js'
@@ -15,10 +16,8 @@ export async function answerCvQuestion(question: string): Promise<CvChatAnswer> 
     }
   }
 
-  const answer = await generateCvChatAnswer(question, hits)
-  const sources = [...new Set(hits.map((hit) => hit.fileName))].map(
-    (fileName) => ({ fileName }),
-  )
+  const { answer, citedFileNames } = await generateCvChatAnswer(question, hits)
+  const sources = resolveChatSources(citedFileNames, hits)
 
   return { answer, sources }
 }

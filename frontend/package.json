@@ -8,7 +8,8 @@
     "build": "tsc -p tsconfig.app.json && tsc -p tsconfig.node.json && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "node --import tsx --test $(find src -name '*.test.ts')"
+    "test": "TSX_TSCONFIG_PATH=./tsconfig.app.json node --import tsx --test $(find src -name '*.test.ts')",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
@@ -26,7 +27,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@types/node": "^24.13.3",
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^24.13.6",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
     "@vitejs/plugin-react": "^6.1.1",

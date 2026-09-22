@@ -7,12 +7,38 @@ import { embedTexts } from '@/infrastructure/openAiClient.js'
 import { rebuildVectorIndex } from '@/infrastructure/vectorIndex.js'
 import { chunkText } from '@/utils/text.js'
 
-export async function ingestCvs(): Promise<IngestSummary> {
-  const pdfPaths = await listCvPdfFiles(env.cvOutputDir)
+export type IngestCvsDeps = {
+  listPdfFiles: (directory: string) => Promise<string[]>
+  readPdfText: (pdfPath: string) => Promise<string>
+  embedTexts: (texts: string[]) => Promise<number[][]>
+  rebuildIndex: (
+    items: Array<{
+      id: string
+      vector: number[]
+      metadata: StoredChunkMetadata
+    }>,
+  ) => Promise<number>
+  outputDir: string
+}
+
+export function createDefaultIngestCvsDeps(): IngestCvsDeps {
+  return {
+    listPdfFiles: listCvPdfFiles,
+    readPdfText: extractPdfEmbeddedText,
+    embedTexts,
+    rebuildIndex: rebuildVectorIndex,
+    outputDir: env.cvOutputDir,
+  }
+}
+
+export async function ingestCvs(
+  deps: IngestCvsDeps = createDefaultIngestCvsDeps(),
+): Promise<IngestSummary> {
+  const pdfPaths = await deps.listPdfFiles(deps.outputDir)
 
   if (pdfPaths.length === 0) {
     throw new Error(
-      `No PDFs found in ${env.cvOutputDir}. Run npm run generate:cvs first.`,
+      `No PDFs found in ${deps.outputDir}. Run npm run generate:cvs first.`,
     )
   }
 
@@ -20,7 +46,7 @@ export async function ingestCvs(): Promise<IngestSummary> {
 
   for (const pdfPath of pdfPaths) {
     const fileName = path.basename(pdfPath)
-    const documentText = await extractPdfEmbeddedText(pdfPath)
+    const documentText = await deps.readPdfText(pdfPath)
 
     for (const [chunkIndex, text] of chunkText(documentText).entries()) {
       rows.push({
@@ -34,7 +60,7 @@ export async function ingestCvs(): Promise<IngestSummary> {
     throw new Error('No text extracted from PDFs.')
   }
 
-  const vectors = await embedTexts(rows.map((row) => row.metadata.text))
+  const vectors = await deps.embedTexts(rows.map((row) => row.metadata.text))
 
   const items = rows.map((row, index) => ({
     id: row.id,
@@ -42,7 +68,7 @@ export async function ingestCvs(): Promise<IngestSummary> {
     metadata: row.metadata,
   }))
 
-  const chunkCount = await rebuildVectorIndex(items)
+  const chunkCount = await deps.rebuildIndex(items)
 
   return { pdfCount: pdfPaths.length, chunkCount }
 }

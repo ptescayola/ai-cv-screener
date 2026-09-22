@@ -12,6 +12,7 @@ import { stripPdfExtension } from '@/utils/string'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
+import { ChatMessageContent } from '@/components/ui/chat/ChatMessageContent'
 import { Skeleton } from '@/components/ui/Skeleton'
 
 export interface ChatBubbleProps {
@@ -81,20 +82,33 @@ export function ChatBubble({
         role === 'assistant' && 'self-start',
       )}
     >
-      <div className="flex items-end gap-2">
+      <div
+        className={cn(
+          'flex items-end gap-2',
+          role === 'user' && 'flex-row-reverse',
+        )}
+      >
         <img
-          className="mb-[1.15rem] size-7 shrink-0 rounded-full object-cover"
+          className={cn(
+            'mb-[1.15rem] size-7 shrink-0 rounded-full object-cover motion-safe:animate-chat-avatar-in',
+            role === 'user' ? 'origin-left' : 'origin-right',
+          )}
           src={avatarForRole(role)}
           alt=""
         />
-        <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <div
+          className={cn(
+            'flex min-w-0 flex-col gap-1',
+            role === 'user' ? 'items-end' : 'flex-1',
+          )}
+        >
           <div
             className={cn(
-              'relative flex flex-col gap-2 rounded-xl px-4 py-3',
+              'relative flex flex-col gap-2 rounded-xl px-4 py-3 motion-safe:animate-chat-bubble-in',
               role === 'user' && 'bg-chat-user text-white',
               role === 'assistant' &&
                 !error &&
-                'border border-border bg-card text-foreground pr-[3.25rem]',
+                'border border-border bg-card text-foreground pr-18',
               role === 'assistant' &&
                 error &&
                 'border border-destructive/35 bg-destructive/10 text-destructive',
@@ -106,17 +120,15 @@ export function ChatBubble({
               <Button
                 type="button"
                 variant="ghost"
-                size="icon-xs"
-                className="absolute top-[0.35rem] right-[0.35rem] min-w-6 text-muted-foreground opacity-75 hover:opacity-100"
+                size="xs"
+                className="absolute top-[0.35rem] right-[0.35rem] z-1 opacity-75 hover:opacity-100"
                 title={copied ? 'Copied!' : 'Copy answer'}
                 onClick={() => {
                   void handleCopy()
                 }}
               >
                 {copied ? (
-                  <span className="text-[0.625rem] font-semibold whitespace-nowrap">
-                    Copied!
-                  </span>
+                  <span className="font-semibold whitespace-nowrap">Copied!</span>
                 ) : (
                   <ClipboardDocumentIcon />
                 )}
@@ -133,9 +145,7 @@ export function ChatBubble({
               </>
             ) : (
               <>
-                <p className="m-0 text-[0.8125rem] leading-[1.55] whitespace-pre-wrap">
-                  {content}
-                </p>
+                <ChatMessageContent content={content ?? ''} />
                 {role === 'assistant' && sources && sources.length > 0 ? (
                   <div className="flex flex-col gap-2 pt-1">
                     <span className="text-[0.625rem] font-semibold tracking-[0.06em] text-muted-foreground uppercase">
@@ -168,7 +178,10 @@ export function ChatBubble({
           </div>
           {createdAt != null ? (
             <time
-              className="px-1 text-right text-[0.6875rem] text-muted-foreground"
+              className={cn(
+                'w-full px-1 text-[0.6875rem] text-muted-foreground',
+                role === 'user' ? 'self-start text-left' : 'text-right',
+              )}
               dateTime={new Date(createdAt).toISOString()}
             >
               {formatMessageTime(createdAt)}

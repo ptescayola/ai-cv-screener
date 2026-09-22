@@ -143,9 +143,31 @@ VITE_OPENAI_URL=https://openai.com
 ```bash
 npm run dev:backend
 npm run dev:frontend
-npm run test
-npm run test:backend
-npm run test:frontend
 ```
 
 Health: [http://localhost:3001/health](http://localhost:3001/health) → `{"status":"ok"}`.
+
+## Tests
+
+All unit tests use Node’s built-in [`node:test`](https://nodejs.org/api/test.html) runner with TypeScript via `tsx`. E2E uses [Playwright](https://playwright.dev/) in the browser.
+
+| Layer | Location | What it covers |
+|-------|----------|----------------|
+| **Backend unit** | `backend/src/**/*.test.ts` | Application use cases with injected deps (`generateCv`, `ingestCvs`, `resolveChatSources`) and small utilities (`string`, `text`, `number`). No OpenAI or disk I/O in tests. |
+| **Frontend unit** | `frontend/src/**/*.test.ts` | Chat module (messages, thread key, scroll metrics, `chatClient`, download URLs) and shared utils (`string`, `date`). |
+| **E2E** | `frontend/e2e/*.spec.ts` | One happy path: type a question, send, assert the assistant reply in the chat log. **`POST /api/chat` is mocked** so no API key or vector index is required. Playwright starts the Vite dev server automatically. |
+
+From the repo root:
+
+```bash
+npm run test              # backend unit + frontend unit
+npm run test:backend
+npm run test:frontend
+npm run test:e2e          # Playwright (Chromium)
+```
+
+First time on a machine, install Playwright browsers:
+
+```bash
+cd frontend && npx playwright install
+```

@@ -12,6 +12,7 @@ export async function runChatAgent<TInput>(
   const completion = await client.chat.completions.create({
     model: env.openAiTextModel,
     temperature: agent.temperature,
+    response_format: { type: 'json_object' },
     messages: [
       { role: 'system', content: agent.systemPrompt },
       { role: 'user', content: agent.buildUserMessage(input) },
