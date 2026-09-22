@@ -1,12 +1,13 @@
 # CV Screener
 
-Monorepo with a React frontend (chat over CVs) and an Express backend. CV PDFs are generated offline, then ingested into a local vector index for RAG.
+Monorepo with a React frontend (chat over CVs) and an Express backend with Hexagonal Arquitecture.
 
-```
-cv-screener/
-├── backend/     Express API + CV generation pipeline (CLI)
-└── frontend/    Vite + React chat UI
-```
+**Backend:** Node.js, TypeScript, Express, OpenAI SDK, Vectra (local vector store), PDFKit / pdf.js for generation and ingest.
+
+**Frontend:** React + Vite; axios client with a response interceptor for API errors; chat UI with loading, errors, source badges, and dataset-aware empty state.
+
+**Quality:** Unit tests (backend + frontend), Playwright e2e (mocked API), GitHub Actions CI, Husky (lint-staged + pre-push unit tests).
+
 
 ## Frontend layout (`frontend/src`)
 
@@ -39,26 +40,18 @@ scripts/         generateCvs, ingestCvs CLIs
 api/             HTTP routes (`POST /chat`, `GET /dataset/status`, `GET /cvs/:fileName`)
 ```
 
-## CV generation (offline dataset)
-
-This is **data prep**, not part of the live chat demo. Run once from the terminal:
+## CV generation
 
 ```bash
 npm run generate:cvs
 ```
 
-That generates PDFs and then runs **ingest** (text → chunks → embeddings → Vectra index). To rebuild the index from existing PDFs only:
-
 ```bash
 npm run ingest:cvs
 ```
 
-Optional count (1–30):
-
 ```bash
-npm run generate:cvs -- 28
-# or
-CV_GENERATION_COUNT=28 npm run generate:cvs --workspace=backend
+npm run generate:cvs -- 25
 ```
 
 
@@ -116,7 +109,6 @@ All models are configured via `.env` at the repository root.
 | `OPENAI_IMAGE_SIZE` | `816x816` | Headshot dimensions in the PDF |
 
 
-
 ## Setup
 
 ```bash
@@ -141,15 +133,6 @@ VITE_GITHUB_URL=https://github.com/ptescayola
 VITE_LINKEDIN_URL=https://www.linkedin.com/in/ptescayola
 VITE_OPENAI_URL=https://openai.com
 ```
-
-## Frontend UI (shadcn)
-
-[shadcn/ui](https://ui.shadcn.com/) is set up in `frontend/` (`components.json`, Tailwind v4). Theme colors and radii live on shadcn CSS variables in `index.css` (`--background`, `--primary`, `--chat-bubble-user`, etc.), with dark mode via the `dark` class on `<html>` (`useTheme`).
-
-- **Components:** primitives under `components/shadcn/`, consumed through `components/ui/` where the app imports them.
-- **Chat:** source PDFs appear as download badges inside `ChatBubble` (not a separate chips component). Lists in answers are rendered in `ChatMessageContent`.
-- **Empty state:** if the vector index is missing, `ChatEmptyNoDataset` shows `npm run generate:cvs` with a copy button; otherwise suggestions from `CHAT_PROMPT_SUGGESTIONS`.
-
 
 ## Develop
 
@@ -188,3 +171,68 @@ cd frontend && npx playwright install
 **CI:** GitHub Actions (`.github/workflows/ci.yml`) runs `test:backend`, `test:frontend`, and `test:e2e` on push/PR to `main` or `master`.
 
 **Git hooks (Husky):** after `npm install`, `prepare` installs hooks — **pre-commit** runs `lint-staged` (ESLint `--fix` on staged `frontend/**/*.{ts,tsx}`); **pre-push** runs `npm test` (unit tests only). E2E stays in CI.
+
+## Assumptions & next steps
+
+This repo is a **local prototype** for the technical task, not a production SaaS. The sections below state what we assumed for the MVP and what we would add to ship to real users.
+
+### Assumptions (current scope)
+
+- **Runtime:** Developers run backend + frontend locally.
+- **Data:** CVs are **synthetic** and generated via CLI; the chat reads a **pre-built** Vectra index on disk.
+- **PDF text:** Ingest uses **embedded text** from PDFs (pdf.js). We assume generated CVs always include selectable text—not scanned image-only pages.
+- **Security:** No authentication; anyone with network access to the API could call `/chat` and consume OpenAI quota.
+- **Chat UX:** Messages live in memory only (no persisted conversation history).
+
+### Next steps (production & end users)
+
+**Platform & operations**
+
+- Deploy the UI (e.g. **Vercel** or similar) and the API on a separate service with **HTTPS**, custom domain, and **per-environment** secrets (staging/production).
+- **Rate limiting**, max message length, **timeouts** on `/chat`, and **cost caps** (per user/day or per tenant).
+- **Observability:** structured logs, tracing, metrics (RAG latency, retrieval hit rate, OpenAI errors), and alerting (e.g. Sentry, Datadog, or OpenTelemetry + your stack of choice).
+
+**Data ingestion & storage**
+
+- Move ingest from a **manual offline CLI** to an **automated pipeline**: upload PDFs/images in bulk (admin UI or S3 drop), queue jobs, rebuild the index on a schedule or on upload.
+- Support **real-world CVs:** when PDFs are image-only, run **pdf-to-image + OCR** (e.g. Tesseract) before chunking; keep embedded-text path for digital PDFs.
+- **RAG persistence:** today Vectra is a **single-node folder**—add backup/restore and, at scale, migrate to a managed or server vector store (**Postgres + pgvector**, Pinecone, Chroma server, etc.) with index versioning.
+
+**Retrieval & model quality**
+
+- Tune **chunk size / overlap**, **top-K**, and optional **re-ranking** so broad questions do not return five chunks from the same CV.
+- Experiment with **temperature**, prompts, and eval sets (golden questions) to measure regression when models or retrieval change.
+- Optional: cache or learn from frequent queries (query clustering, suggested prompts)—without training on user PII without consent.
+
+**Product**
+
+- **Authentication** and multi-tenant datasets (who can see which CVs).
+- **i18n** for the UI (CV content may already vary by language from generation).
+- Persist **chat history**, export, feedback (thumbs up/down), and clearer “AI limitations” copy for recruiters.
+
+## Time spent (approx.)
+
+Rough effort for this submission (~**15 hours** total):
+
+| Phase | Hours | Notes |
+|-------|------:|-------|
+| Understanding the task | 1 | Requirements, RAG flow, stack choices |
+| Implementation | 8 | Backend pipeline, RAG, frontend chat UI |
+| Design / UX | 1 | Layout, theme, chat empty states, motion |
+| Testing | 2 | Unit tests, Playwright e2e, CI hooks |
+| Documentation | 2 | README, setup path, architecture notes |
+| Demo prep | 1 | Sample run-through, sanity checks |
+
+Figures are approximate and exclude long OpenAI runs for generating a full 25-CV dataset (depends on API latency and quota).
+
+## References & how this was built
+
+**Documentation & libraries**
+
+Implementation follows official docs and project sites where relevant, including [OpenAI API](https://platform.openai.com/docs), [Vectra](https://github.com/Stevenic/vectra), [Express](https://expressjs.com/), [Vite](https://vite.dev/), [React](https://react.dev/), [shadcn/ui](https://ui.shadcn.com/), [Playwright](https://playwright.dev/), and library READMEs in this monorepo.
+
+**AI-assisted development**
+
+90% of code was written with **[Cursor](https://cursor.com/)** (Composer 2.5) as a pair-programming assistant: scaffolding, refactors, tests, and README drafts. **All architectural choices, prompts, UX decisions, and final diffs were reviewed and edited by me**—
+
+If you are evaluating this submission: treat the repo as my work product with modern AI-native workflow, consistent with how I would build and ship features on a product team today.

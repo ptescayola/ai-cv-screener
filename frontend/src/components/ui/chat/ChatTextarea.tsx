@@ -27,7 +27,7 @@ function resizeTextarea(element: HTMLTextAreaElement) {
 }
 
 const chatTextareaClassName =
-  'min-h-[2.5rem] max-h-[10.5rem] resize-none overflow-y-hidden border-border bg-background px-3 py-2 text-xs leading-normal text-foreground placeholder:text-muted-foreground focus-visible:border-border focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-1 disabled:opacity-70'
+  'min-h-[2.5rem] max-h-[10.5rem] resize-none overflow-y-hidden border-border bg-background px-3 py-2 text-[0.9rem]! leading-normal text-foreground placeholder:text-muted-foreground focus-visible:border-border focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-1 disabled:opacity-70 md:text-[0.6875rem]'
 
 export function ChatTextarea({
   id,
