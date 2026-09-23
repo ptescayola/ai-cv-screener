@@ -44,8 +44,9 @@ api/             HTTP routes (`POST /chat`, `GET /dataset/status`, `GET /cvs/:fi
 
 ![AI CV Screener workflow overview](./docs/workflow-overview.png)
 
-## DEMO
-![AI Powered CV Screener Technical Demo](https://www.loom.com/share/699c47f1ddd94286bd7912913d42f2f3)
+## Demo
+
+**[AI Powered CV Screener — technical demo](https://www.loom.com/share/699c47f1ddd94286bd7912913d42f2f3)** (Loom)
 
 ## CV generation and ingest
 
