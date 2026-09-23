@@ -44,18 +44,17 @@ api/             HTTP routes (`POST /chat`, `GET /dataset/status`, `GET /cvs/:fi
 
 ![AI CV Screener workflow overview](./docs/workflow-overview.png)
 
-## CV generation
+## DEMO
+![AI Powered CV Screener Technical Demo](https://www.loom.com/share/699c47f1ddd94286bd7912913d42f2f3)
+
+## CV generation and ingest
 
 ```bash
-npm run generate:cvs
+npm run generate:cvs -- 25
 ```
 
 ```bash
 npm run ingest:cvs
-```
-
-```bash
-npm run generate:cvs -- 25
 ```
 
 
@@ -131,7 +130,7 @@ OPENAI_IMAGE_SIZE=816x816
 PORT=3001
 OPENAI_EMBEDDING_MODEL=text-embedding-3-small
 CV_OUTPUT_DIR=./data/cvs
-CV_GENERATION_COUNT=25
+CV_GENERATION_COUNT=10
 VECTOR_INDEX_DIR=./data/vector-index
 VITE_GITHUB_URL=https://github.com/ptescayola
 VITE_LINKEDIN_URL=https://www.linkedin.com/in/ptescayola
